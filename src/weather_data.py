@@ -72,6 +72,17 @@ def connect_db(config):
         config.client.switch_database(config.db_name)
 
 
+def get_entries(config, station, start_time: datetime, stop_time: datetime = None) -> pd.DataFrame:
+    if not stop_time:
+        query = f'SELECT * FROM {station} WHERE time > now() - {start_time}'
+
+    else:
+        query = f'SELECT * FROM {station} WHERE time >= \'{start_time.strftime("%Y-%m-%dT%H:%M:%SZ")}\' AND time <= \'{stop_time.strftime("%Y-%m-%dT%H:%M:%SZ")}\''
+
+    result = config.client.query(query)
+    return result.get(station, None)
+
+
 def clean_db(config):
     """Drops the whole database and creates it again
 
