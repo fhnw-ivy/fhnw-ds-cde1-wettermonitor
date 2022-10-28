@@ -2,7 +2,7 @@ version: '3'
 services:
   influxdb:
     image: influxdb:1.8
-    restart: always
+    restart: unless-stopped
     ports:
       - '8086:8086'
     volumes:
@@ -12,9 +12,23 @@ services:
       - INFLUXDB_ADMIN_USER=${INFLUXDB_USERNAME}
       - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_PASSWORD}
 
+  chronograf:
+    image: chronograf:latest
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:9000:8888'
+    volumes:
+      - chronograf-storage:/var/lib/chronograf
+    depends_on:
+      - influxdb
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_USERNAME=${INFLUXDB_USERNAME}
+      - INFLUXDB_PASSWORD=${INFLUXDB_PASSWORD}
+
   weather-monitor:
-    image: ghcr.io/fhnw-ivy/fhnw-ds-cde1-wettermonitor:main
-    restart: always
+    build: ./src
+    restart: unless-stopped
     ports:
       - '6540:6540'
     environment:
