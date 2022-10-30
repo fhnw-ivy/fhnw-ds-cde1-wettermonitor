@@ -1,0 +1,2 @@
+﻿timestamp_utc,timestamp_cet,air_temperature,water_temperature,wind_gust_max_10min,wind_speed_avg_10min,wind_force_avg_10min,wind_direction,windchill,barometric_pressure_qfe,precipitation,dew_point,global_radiation,humidity,water_level
+2007-04-22T19:20:00+00:00,2007-04-22T21:20:00+02:00,18.9,15.2,1.6,0.7,0.7,321,18.9,973.5,0,4.4,3,38,405.94
