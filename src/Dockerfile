@@ -5,9 +5,12 @@ EXPOSE 6540
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
-RUN pip3 install --index-url=https://www.piwheels.org/simple --no-cache-dir -r requirements.txt
+RUN pip3 install influxdb
+RUN pip3 install numpy
+RUN pip3 install pandas
+RUN pip3 install requests
+RUN pip3 install Flask
 
 COPY .. .
 
