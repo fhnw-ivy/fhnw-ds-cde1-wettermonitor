@@ -5,6 +5,8 @@ EXPOSE 6540
 
 WORKDIR /app
 
+RUN pip install pandas
+
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
