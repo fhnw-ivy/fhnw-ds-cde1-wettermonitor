@@ -89,12 +89,14 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
         return None
 
     try:
+        print(f"Query: {query}")
         result = config.client.query(query)
         return result.get(station, None)
     except Exception as e:
         print(f"Query '{query}' failed. Exception: {e}")
 
     return None
+
 
 def clean_db(config):
     """Drops the whole database and creates it again
