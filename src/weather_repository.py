@@ -3,12 +3,14 @@ import enum
 import os
 import time
 
+from pandas import DataFrame
+
 import weather_data as wd
 
 config = wd.Config()
 
 
-def init():
+def init() -> None:
     config.db_host = os.environ.get("INFLUXDB_HOST") if os.environ.get("INFLUXDB_HOST") else "localhost"
     config.db_port = int(os.environ.get("INFLUXDB_PORT")) if os.environ.get("INFLUXDB_PORT") else 8086
     print(f"DB config: host {config.db_host}, port {config.db_port}")
@@ -36,16 +38,34 @@ def init():
         init()
 
 
-def import_latest_data_periodic():
+def import_latest_data_periodic() -> None:
     print("Periodic read starting")
     wd.import_latest_data(config, periodic_read=True)
 
 
-def get_all_entries(station: str, start_time: datetime, stop_time: datetime = None):
+def __create_query_date_string(date: datetime) -> str:
+    return date.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def get_all_entries(station: str, start_time: datetime, stop_time: datetime = None) -> DataFrame | None:
+    """
+    Getting all entries form a specified time intervall and station
+    Args:
+        station: Station string
+        start_time: < x
+        stop_time:  > x
+    """
+
     try:
-        return wd.get_entries(config=config, station=station, start_time=start_time, stop_time=stop_time)
-    except:
-        print("get_all_entries entries failed")
+        if not stop_time:
+            query = f'SELECT * FROM {station} WHERE time > now() - {__create_query_date_string(start_time)}'
+
+        else:
+            query = f'SELECT * FROM {station} WHERE time >= \'{__create_query_date_string(start_time)}\' AND time <= \'{__create_query_date_string(stop_time)}\''
+
+        return wd.execute_query(config=config, station=station, query=query)
+    except Exception as e:
+        print("get_all_entries entries failed.")
 
     return None
 
