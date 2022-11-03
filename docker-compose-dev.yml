@@ -27,7 +27,7 @@ services:
       - INFLUXDB_PASSWORD=${INFLUXDB_PASSWORD}
 
   weather-monitor:
-    build: ./src
+    build: .
     restart: unless-stopped
     ports:
       - '6540:6540'
