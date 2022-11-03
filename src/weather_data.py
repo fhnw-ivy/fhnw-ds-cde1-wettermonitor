@@ -24,6 +24,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import numpy as np
+import pandas
 import pandas as pd
 import requests
 from influxdb import DataFrameClient
@@ -72,15 +73,29 @@ def connect_db(config):
         config.client.switch_database(config.db_name)
 
 
-def get_entries(config, station, start_time: datetime, stop_time: datetime = None) -> pd.DataFrame:
-    if not stop_time:
-        query = f'SELECT * FROM {station} WHERE time > now() - {start_time}'
+def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame | None:
+    """
+    Executes a given query related to a specific weather station that is within the config
+    Args:
+        config: DB config
+        station: Station from the weather config
+        query: Influx query string
 
-    else:
-        query = f'SELECT * FROM {station} WHERE time >= \'{start_time.strftime("%Y-%m-%dT%H:%M:%SZ")}\' AND time <= \'{stop_time.strftime("%Y-%m-%dT%H:%M:%SZ")}\''
+    Returns: None in case of error or empty set or pandas DataFrame with data
+    """
 
-    result = config.client.query(query)
-    return result.get(station, None)
+    if station not in config.stations:
+        print("Station not found")
+        return None
+
+    try:
+        print(f"Query: {query}")
+        result = config.client.query(query)
+        return result.get(station, None)
+    except Exception as e:
+        print(f"Query '{query}' failed. Exception: {e}")
+
+    return None
 
 
 def clean_db(config):
