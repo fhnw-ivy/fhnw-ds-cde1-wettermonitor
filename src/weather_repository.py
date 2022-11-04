@@ -1,6 +1,7 @@
 import datetime
 import enum
 import os
+import time
 from builtins import str
 
 from pandas import DataFrame
@@ -40,7 +41,7 @@ class WeatherQuery:
         query = f'SELECT {WeatherQuery.create_measurements_string(self.measurements) if self.measurements is not None else "*"} ' \
                 f'FROM {self.station} ' \
                 f'{("WHERE " + time_string) if has_time else "ORDER BY time DESC"} ' \
-                f'{"LIMIT 1" if not has_time else ""}' \
+                f'{"LIMIT 1" if not has_time else ""}'
 
         return query
 
@@ -84,9 +85,17 @@ def init() -> None:
 
 
 def import_latest_data_periodic() -> None:
-    print("Periodic read starting")
-    wd.import_latest_data(config, periodic_read=True)
+    try:
+        print("Periodic read started.")
+        wd.import_latest_data(config, periodic_read=True)
+    except Exception as e:
+        print("Periodic read failed.")
+        print(e)
 
+    print("Restarting periodic read in 3s..")
+    time.sleep(3)
+
+    import_latest_data_periodic()
 
 def run_query(query: WeatherQuery) -> DataFrame | None:
     try:
