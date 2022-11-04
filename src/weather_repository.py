@@ -48,17 +48,6 @@ def import_latest_data_periodic() -> None:
     wd.import_latest_data(config, periodic_read=True)
 
 
-def __create_query_date_string(date: datetime) -> str:
-    return date.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def __create_query_time_where_string(start_time: datetime, stop_time: datetime = None):
-    if not stop_time:
-        return f'time > now() - {__create_query_date_string(start_time)}'
-
-    return f'time >= \'{__create_query_date_string(start_time)}\' AND time <= \'{__create_query_date_string(stop_time)}\''
-
-
 def get_all(station: str, start_time: datetime, stop_time: datetime = None) -> DataFrame | None:
     """
     Getting all entries form a specified time intervall and station
@@ -77,7 +66,7 @@ def get_all(station: str, start_time: datetime, stop_time: datetime = None) -> D
 
 
 def get_measurements(station: str, measurements: list[Measurement], start_time: datetime,
-                stop_time: datetime = None) -> DataFrame | None:
+                     stop_time: datetime = None) -> DataFrame | None:
     """
     Getting all entries form a specified time intervall and station
     Args:
@@ -87,9 +76,34 @@ def get_measurements(station: str, measurements: list[Measurement], start_time: 
         stop_time:  > x
     """
     try:
-        query = f"SELECT {','.join(str(x.value) for x in measurements)} FROM {station} WHERE {__create_query_time_where_string(start_time=start_time, stop_time=stop_time)}"
+        query = f"SELECT {__create_query_measurements_string(measurements)} FROM {station} WHERE {__create_query_time_where_string(start_time=start_time, stop_time=stop_time)}"
         return wd.execute_query(config=config, station=station, query=query)
     except Exception as e:
         print("get_measurements failed.")
 
     return None
+
+
+def get_latest_measurements(station: str, measurements: list[Measurement]) -> DataFrame | None:
+    try:
+        query = f"SELECT {__create_query_measurements_string(measurements)} FROM {station} ORDER BY time DESC LIMIT 1"
+        return wd.execute_query(config=config, station=station, query=query)
+    except Exception as e:
+        print("get_latest_measurements failed.")
+
+    return None
+
+
+def __create_query_date_string(date: datetime) -> str:
+    return date.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def __create_query_time_where_string(start_time: datetime, stop_time: datetime = None):
+    if not stop_time:
+        return f'time > now() - {__create_query_date_string(start_time)}'
+
+    return f'time >= \'{__create_query_date_string(start_time)}\' AND time <= \'{__create_query_date_string(stop_time)}\''
+
+
+def __create_query_measurements_string(measurements: list[Measurement]):
+    return ','.join(str(x.value) for x in measurements)

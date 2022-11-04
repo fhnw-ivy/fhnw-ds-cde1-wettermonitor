@@ -26,8 +26,7 @@ def wetterstation(station: str):
 
     measurements = [wr.Measurement.Humidity, wr.Measurement.Pressure]
 
-    weather_data = wr.get_measurements(station=station, start_time=start_time, stop_time=stop_time,
-                                       measurements=measurements)
+    weather_data = wr.get_latest_measurements(station=station, measurements=measurements)
 
     return render_template('index.html', subpage="base", station=station, data=weather_data, refresh_interval=10)
 
