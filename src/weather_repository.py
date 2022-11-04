@@ -1,6 +1,7 @@
 import datetime
 import enum
 import os
+from builtins import str
 
 from pandas import DataFrame
 
@@ -21,6 +22,45 @@ class Measurement(enum.Enum):
     Wind_speed_avg_10min = "wind_speed_avg_10min"
     Wind_chill = "windchill"
     Radiation = "global_radiation"
+
+
+class WeatherQuery:
+    def __init__(self, station: str, measurements: list[Measurement] = None, start_time: datetime = None,
+                 stop_time: datetime = None):
+        self.station = station
+        self.measurements = measurements
+        self.start_time = start_time
+        self.stop_time = stop_time
+
+    def create_query_string(self):
+
+        time_string = WeatherQuery.create_time_where_string(start_time=self.start_time, stop_time=self.stop_time)
+        has_time = time_string is not None
+
+        query = f'SELECT {WeatherQuery.create_measurements_string(self.measurements) if self.measurements is not None else "*"} ' \
+                f'FROM {self.station} ' \
+                f'{("WHERE " + time_string) if has_time else "ORDER BY time DESC"} ' \
+                f'{"LIMIT 1" if not has_time else ""}' \
+
+        return query
+
+    @staticmethod
+    def create_date_string(date: datetime) -> str:
+        return date.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    @staticmethod
+    def create_time_where_string(start_time: datetime, stop_time: datetime = None):
+        if not stop_time and not start_time:
+            return None
+
+        if not stop_time:
+            return f'time > now() - {WeatherQuery.create_date_string(start_time)}'
+
+        return f'time >= \'{WeatherQuery.create_date_string(start_time)}\' AND time <= \'{WeatherQuery.create_date_string(stop_time)}\''
+
+    @staticmethod
+    def create_measurements_string(measurements: list[Measurement]):
+        return ','.join(str(x.value) for x in measurements)
 
 
 config = wd.Config()
@@ -48,62 +88,11 @@ def import_latest_data_periodic() -> None:
     wd.import_latest_data(config, periodic_read=True)
 
 
-def get_all(station: str, start_time: datetime, stop_time: datetime = None) -> DataFrame | None:
-    """
-    Getting all entries form a specified time intervall and station
-    Args:
-        station: Station string
-        start_time: < x
-        stop_time:  > x
-    """
+def run_query(query: WeatherQuery) -> DataFrame | None:
     try:
-        query = f"SELECT * FROM {station} WHERE {__create_query_time_where_string(start_time=start_time, stop_time=stop_time)}"
-        return wd.execute_query(config=config, station=station, query=query)
+        return wd.execute_query(config=config, station=query.station, query=query.create_query_string())
     except Exception as e:
-        print("get_all failed.")
+        print("run_query failed.")
+        print(e)
 
-    return None
-
-
-def get_measurements(station: str, measurements: list[Measurement], start_time: datetime,
-                     stop_time: datetime = None) -> DataFrame | None:
-    """
-    Getting all entries form a specified time intervall and station
-    Args:
-        measurements:
-        station: Station string
-        start_time: < x
-        stop_time:  > x
-    """
-    try:
-        query = f"SELECT {__create_query_measurements_string(measurements)} FROM {station} WHERE {__create_query_time_where_string(start_time=start_time, stop_time=stop_time)}"
-        return wd.execute_query(config=config, station=station, query=query)
-    except Exception as e:
-        print("get_measurements failed.")
-
-    return None
-
-
-def get_latest_measurements(station: str, measurements: list[Measurement]) -> DataFrame | None:
-    try:
-        query = f"SELECT {__create_query_measurements_string(measurements)} FROM {station} ORDER BY time DESC LIMIT 1"
-        return wd.execute_query(config=config, station=station, query=query)
-    except Exception as e:
-        print("get_latest_measurements failed.")
-
-    return None
-
-
-def __create_query_date_string(date: datetime) -> str:
-    return date.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def __create_query_time_where_string(start_time: datetime, stop_time: datetime = None):
-    if not stop_time:
-        return f'time > now() - {__create_query_date_string(start_time)}'
-
-    return f'time >= \'{__create_query_date_string(start_time)}\' AND time <= \'{__create_query_date_string(stop_time)}\''
-
-
-def __create_query_measurements_string(measurements: list[Measurement]):
-    return ','.join(str(x.value) for x in measurements)
+    pass

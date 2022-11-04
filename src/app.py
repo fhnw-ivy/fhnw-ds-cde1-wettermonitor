@@ -19,16 +19,17 @@ def index():
 @app.route("/weatherstation/<station>")
 def wetterstation(station: str):
     if not service_ready:
-        return "Service not ready"
+        return render_template('loading.html')
 
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    measurements = [wr.Measurement.Humidity, wr.Measurement.Pressure]
+    measurements = [wr.Measurement.Humidity, wr.Measurement.Pressure, wr.Measurement.Air_temp]
 
-    weather_data = wr.get_latest_measurements(station=station, measurements=measurements)
+    weather_query = wr.WeatherQuery(station=station, measurements=measurements)
+    weather_data = wr.run_query(weather_query)
 
-    return render_template('index.html', subpage="base", station=station, data=weather_data, refresh_interval=10)
+    return render_template('index.html', subpage="base", station=station, data=weather_data, refresh_interval=60)
 
 
 if __name__ == '__main__':
