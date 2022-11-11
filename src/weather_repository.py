@@ -7,6 +7,7 @@ from builtins import str
 from pandas import DataFrame
 
 import weather_data as wd
+from src import plotting
 
 
 class Measurement(enum.Enum):
@@ -85,9 +86,13 @@ def init() -> None:
 
 
 def import_latest_data_periodic() -> None:
+    plotting.generate_last_week_plots()
+
     try:
         print("Periodic read started.")
         wd.import_latest_data(config, periodic_read=True)
+        print("Periodic read finished.")
+
     except Exception as e:
         print("Periodic read failed.")
         print(e)
@@ -96,6 +101,7 @@ def import_latest_data_periodic() -> None:
     time.sleep(3)
 
     import_latest_data_periodic()
+
 
 def run_query(query: WeatherQuery) -> DataFrame | None:
     try:

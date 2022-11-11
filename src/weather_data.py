@@ -30,7 +30,7 @@ import requests
 from influxdb import DataFrameClient
 from pandas import json_normalize
 from requests.exceptions import ConnectionError
-
+import pytz
 
 class Config:
     db_host = 'localhost'
@@ -91,7 +91,15 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
     try:
         print(f"Query: {query}")
         result = config.client.query(query)
-        return result.get(station, None)
+        df = result.get(station, None)
+
+        zurich = pytz.timezone('Europe/Zurich')
+        df.index = df.index.map(lambda date: date.astimezone(zurich))
+        df["time"] = df.index
+        df = df.reset_index(drop=True)
+
+        return df
+
     except Exception as e:
         print(f"Query '{query}' failed. Exception: {e}")
 

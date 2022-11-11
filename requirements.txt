@@ -3,3 +3,5 @@ numpy~=1.23.4
 pandas~=1.5.1
 requests~=2.28.1
 influxdb~=5.3.1
+seaborn~=0.12.1
+pytz~=2022.5
