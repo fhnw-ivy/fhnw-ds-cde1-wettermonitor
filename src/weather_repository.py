@@ -7,7 +7,7 @@ from builtins import str
 from pandas import DataFrame
 
 import weather_data as wd
-from src import plotting
+import plotting as plt
 
 
 class Measurement(enum.Enum):
@@ -86,7 +86,7 @@ def init() -> None:
 
 
 def import_latest_data_periodic() -> None:
-    plotting.generate_last_week_plots()
+    plt.generate_last_week_plots()
 
     try:
         print("Periodic read started.")
