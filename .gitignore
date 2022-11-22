@@ -185,3 +185,5 @@ fabric.properties
 # .idea
 
 .DS_Store
+
+src/templates/plots/

@@ -86,8 +86,6 @@ def init() -> None:
 
 
 def import_latest_data_periodic() -> None:
-    plt.generate_last_week_plots()
-
     try:
         print("Periodic read started.")
         wd.import_latest_data(config, periodic_read=True)
@@ -111,3 +109,7 @@ def run_query(query: WeatherQuery) -> DataFrame | None:
         print(e)
 
     pass
+
+
+def get_stations():
+    return config.stations

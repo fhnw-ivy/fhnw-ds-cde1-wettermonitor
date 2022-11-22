@@ -1,30 +1,50 @@
 import datetime
 
+import schedule
+
 import weather_repository as wr
-import seaborn as sns
 import plotly.express as px
-sns.set_theme()
+
+plots_directory = "./templates/plots/"
 
 
-def generate_last_week_plots():
+# Generate plot for the past 24 hours for a given station and the wind speeds
+def generate_wind_speed_plot_today(station: str):
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
-    measurements = [wr.Measurement.Air_temp, wr.Measurement.Water_temp, wr.Measurement.Precipitation]
 
-    data_query = wr.WeatherQuery(start_time=start_time, stop_time=stop_time, station="tiefenbrunnen", measurements=measurements)
-    data = wr.run_query(data_query)
+    measurements = [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min]
 
-    plot = sns.lineplot(data=data, x="time", y=wr.Measurement.Air_temp.value)
-    plot = px.line(data, x="time", y=wr.Measurement.Air_temp.value)
+    weather_query = wr.WeatherQuery(station=station, measurements=measurements, start_time=start_time,
+                                    stop_time=stop_time)
+    weather_data = wr.run_query(weather_query)
 
-    save_plot(plot, "air_temp_7days")
+    plot = px.line(weather_data, x="time", y=["wind_speed_avg_10min", "wind_gust_max_10min"],
+                   title="Windgeschwindigkeit (10min Mittelwert und Spitzenwert) der letzten 24 Stunden für " + station,
+                   labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"},
+                   template="plotly_dark")
+    save_plot(plot, "wind_speed", station)
 
 
-
-def save_plot(plot, plot_name):
+def save_plot(plot, plot_name, station):
+    plot_file_name = f"{station}_{plot_name}.html"
     try:
-        plot.savefig(f"/static/plots/{plot_name}.png")
-        # plot.get_figure().savefig(f'./static/{plot_name}.png', dpi=500, bbox_inches='tight')
+        plot.write_html(f"{plots_directory}{plot_file_name}")
+        print(f"Saved plot {plot_name}.")
     except Exception as e:
-        print("save_plot failed.")
+        print(f"Saving plot {plot_name} failed.")
         print(e)
+
+
+def generate_all_plots():
+    for station in wr.get_stations():
+        generate_wind_speed_plot_today(station)
+        print(f"Generated plots for station {station}.")
+
+
+def init():
+    # First generate all plots
+    generate_all_plots()
+
+    # Then schedule the generation of new plots every 10 minutes
+    schedule.every(10).minutes.do(generate_all_plots)
