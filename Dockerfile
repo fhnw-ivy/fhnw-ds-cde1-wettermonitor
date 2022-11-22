@@ -9,6 +9,6 @@ COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-COPY .. .
+COPY ./src .
 
-CMD [ "python3", "./src/app.py" ]
+CMD [ "python3", "./app.py" ]
