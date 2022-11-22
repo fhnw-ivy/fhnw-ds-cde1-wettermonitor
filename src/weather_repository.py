@@ -77,7 +77,7 @@ def init() -> None:
     print("DB connected")
 
     for station in config.stations:
-        wd.import_csv_file(config=config, file_name=f"../csv/messwerte_{station}_2022.csv",
+        wd.import_csv_file(config=config, file_name=f"./csv/messwerte_{station}_2022.csv",
                            station=station)
         print(f"CSV '{station}' imported.")
 
