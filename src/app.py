@@ -8,6 +8,11 @@ from flask import Flask, redirect, render_template
 import weather_repository as wr
 import plotting as plt
 
+import logging
+
+logging.basicConfig(filename="test.log", level=logging.INFO, 
+format="%(asctime)s:%(filename)s:%(funcName)s:%(levelname)s:%(message)s")
+
 app = Flask(__name__)
 service_ready = False
 
@@ -45,7 +50,7 @@ def plots(station: str, plot_name: str):
 
 
 def job_watcher():
-    print("Checking for pending jobs...")
+    logging.info("Checking for pending jobs...")
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -59,11 +64,11 @@ if __name__ == '__main__':
         try:
             wr.init()
 
-            print("Service is ready.")
+            logging.info("Service is ready.")
             service_ready = True
         except Exception as e:
-            print("Weather repo init failed. Retrying in 3s...")
-            print(e)
+            logging.info("Weather repo init failed. Retrying in 3s...")
+            logging.info(e)
             time.sleep(3)
 
     threading.Thread(target=wr.import_latest_data_periodic).start()
