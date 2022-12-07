@@ -9,8 +9,7 @@ import weather_repository as wr
 import plotting as plt
 
 import logging
-
-logging.basicConfig(filename="test.log", level=logging.INFO, 
+logging.basicConfig(filename="app.log", level=logging.INFO,
 format="%(asctime)s:%(filename)s:%(funcName)s:%(levelname)s:%(message)s")
 
 app = Flask(__name__)
@@ -57,7 +56,10 @@ def job_watcher():
 
 
 if __name__ == '__main__':
-    threading.Thread(target=lambda: app.run(host='0.0.0.0', port=6540, debug=True, use_reloader=False)).start()
+    threads =[]
+    flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=6540, debug=True, use_reloader=False))
+    threads.append(flask_thread)
+    flask_thread.start()
 
     # Weather repository
     while not service_ready:
@@ -71,7 +73,9 @@ if __name__ == '__main__':
             logging.info(e)
             time.sleep(3)
 
-    threading.Thread(target=wr.import_latest_data_periodic).start()
+    periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
+    threads.append(periodic_read_thread)
+    periodic_read_thread.start()
 
     # Plotting
     plt.init()
