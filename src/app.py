@@ -9,8 +9,11 @@ import weather_repository as wr
 import plotting as plt
 
 import logging
-logging.basicConfig(filename="app.log", level=logging.INFO,
-format="%(asctime)s:%(filename)s:%(funcName)s:%(levelname)s:%(message)s")
+logging.basicConfig(
+    filename="app.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt='%m/%d/%Y %I:%M:%S %p')
 
 app = Flask(__name__)
 service_ready = False
@@ -69,8 +72,8 @@ if __name__ == '__main__':
             logging.info("Service is ready.")
             service_ready = True
         except Exception as e:
-            logging.info("Weather repo init failed. Retrying in 3s...")
-            logging.info(e)
+            logging.error("Weather repo init failed. Retrying in 3s...")
+            logging.error(e)
             time.sleep(3)
 
     periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
@@ -81,4 +84,4 @@ if __name__ == '__main__':
     plt.init()
 
     job_watcher()
-    print("Application finished.")
+    logging.info("Application finished.")

@@ -32,6 +32,12 @@ from pandas import json_normalize
 from requests.exceptions import ConnectionError
 import pytz
 
+import logging
+logging.basicConfig(
+    filename="weather_data.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt='%m/%d/%Y %I:%M:%S %p')
 class Config:
     db_host = 'localhost'
     db_port = 8086
@@ -85,11 +91,11 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
     """
 
     if station not in config.stations:
-        print("Station not found")
+        logging.info("Station not found")
         return None
 
     try:
-        print(f"Query: {query}")
+        logging.debug(f"Query: {query}")
         result = config.client.query(query)
         df = result.get(station, None)
 
@@ -101,7 +107,7 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
         return df
 
     except Exception as e:
-        print(f"Query '{query}' failed. Exception: {e}")
+        logging.error(f"Query '{query}' failed. Exception: {e}")
 
     return None
 
@@ -128,15 +134,15 @@ def import_csv_file(config, station, file_name):
 
    """
     if os.path.isfile(file_name):
-        print('\tLoad ' + file_name)
+        logging.debug('\tLoad ' + file_name)
         for chunk in pd.read_csv(file_name, delimiter=',',
                                  chunksize=config.historic_data_chunksize):
             chunk = __define_types(chunk, '%Y-%m-%dT%H:%M:%S')
-            print('Add ' + station + ' from ' + str(
+            logging.debug('Add ' + station + ' from ' + str(
                 chunk.index[0]) + ' to ' + str(chunk.index[-1]))
             __add_data_to_db(config, chunk, station)
     else:
-        print(file_name + ' does not seem to exist.')
+        logging.info(file_name + ' does not seem to exist.')
 
 
 def import_latest_data(config, periodic_read=False):
@@ -162,7 +168,7 @@ def import_latest_data(config, periodic_read=False):
 
     if periodic_read and threading.current_thread() is threading.main_thread():
         signal.signal(signal.SIGINT, __signal_handler)
-        print('\nPress Ctrl+C to stop!\n')
+        logging.info('\nPress Ctrl+C to stop!\n')
     check_db_day = min(last_db_days)
     check_db_day = check_db_day.replace(hour=0, minute=0, second=0,
                                         microsecond=0)
@@ -183,7 +189,7 @@ def import_latest_data(config, periodic_read=False):
             #                                  microsecond=0)
             sleep_sec = (sleep_until - current_time).total_seconds()
 
-            print('Sleep for ' + str(sleep_sec) + 's (from ' + str(
+            logging.info('Sleep for ' + str(sleep_sec) + 's (from ' + str(
                 current_time) + ' until ' + str(
                 sleep_until) + ') when next data will be queried.')
             sleep(sleep_sec)
@@ -209,11 +215,11 @@ def import_latest_data(config, periodic_read=False):
 
             if normalized_data.size > 0:
                 __add_data_to_db(config, normalized_data, station)
-                print('Handle ' + station + ' from ' + str(
+                logging.info('Handle ' + station + ' from ' + str(
                     normalized_data.index[0]) + ' to ' + str(
                     normalized_data.index[-1]))
             else:
-                print('No new data received for ' + station)
+                logging.info('No new data received for ' + station)
         if check_db_day < current_day:
             check_db_day = check_db_day + pd.DateOffset(1)
         elif periodic_read and check_db_day >= current_day:
@@ -250,7 +256,7 @@ def __get_last_db_entry(config, station):
             last_entry = config.client.query(query)
         except:
             # There are influxDB versions which have an issue with above query
-            print(
+            logging.info(
                 'An exception occurred while querying last entry from DB for ',
                 station, '. Try alternative approach.')
             query = f'SELECT * FROM {station} ORDER BY time DESC LIMIT 1'
@@ -281,7 +287,7 @@ def __get_data_of_day(day, station):
     day_str = day.strftime('%Y-%m-%d')
     end_date = day + timedelta(days=1)
     end_day_str = end_date.strftime('%Y-%m-%d')
-    print('Query ' + station + ' at ' + day_str)
+    logging.info('Query ' + station + ' at ' + day_str)
     payload = {
         'startDate': day_str,
         'endDate': end_day_str
@@ -297,7 +303,7 @@ def __get_data_of_day(day, station):
                 response.raise_for_status()
                 break
         except ConnectionError as e:
-            print(f"Request for '{e.request.url}' failed."
+            logging.error(f"Request for '{e.request.url}' failed."
                   f"({e.args[0].args[0]})\nTrying again in 10 seconds...")
             sleep(10)
 

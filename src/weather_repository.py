@@ -9,6 +9,12 @@ from pandas import DataFrame
 import weather_data as wd
 import plotting as plt
 
+import logging
+logging.basicConfig(
+    filename="weather_repository.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class Measurement(enum.Enum):
     Air_temp = "air_temperature"
@@ -71,31 +77,31 @@ config = wd.Config()
 def init() -> None:
     config.db_host = os.environ.get("INFLUXDB_HOST") if os.environ.get("INFLUXDB_HOST") else "localhost"
     config.db_port = int(os.environ.get("INFLUXDB_PORT")) if os.environ.get("INFLUXDB_PORT") else 8086
-    print(f"DB config: host {config.db_host}, port {config.db_port}")
+    logging.info(f"DB config: host {config.db_host}, port {config.db_port}")
 
     wd.connect_db(config)
-    print("DB connected")
+    logging.info("DB connected")
 
     for station in config.stations:
         wd.import_csv_file(config=config, file_name=f"./csv/messwerte_{station}_2022.csv",
                            station=station)
-        print(f"CSV '{station}' imported.")
+        logging.info(f"CSV '{station}' imported.")
 
     wd.import_latest_data(config, periodic_read=False)
-    print("Latest data imported.")
+    logging.info("Latest data imported.")
 
 
 def import_latest_data_periodic() -> None:
     try:
-        print("Periodic read started.")
+        logging.info("Periodic read started.")
         wd.import_latest_data(config, periodic_read=True)
-        print("Periodic read finished.")
+        logging.info("Periodic read finished.")
 
     except Exception as e:
-        print("Periodic read failed.")
-        print(e)
+        logging.error("Periodic read failed.")
+        logging.error(e)
 
-    print("Restarting periodic read in 3s..")
+    logging.info("Restarting periodic read in 3s..")
     time.sleep(3)
 
     import_latest_data_periodic()
@@ -105,8 +111,8 @@ def run_query(query: WeatherQuery) -> DataFrame | None:
     try:
         return wd.execute_query(config=config, station=query.station, query=query.create_query_string())
     except Exception as e:
-        print("run_query failed.")
-        print(e)
+        logging.error("run_query failed.")
+        logging.error(e)
 
     pass
 
