@@ -93,7 +93,7 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
 
     try:
         logger.debug(f"Query: {query}")
-        result = config.client.query(query)
+        result = config.client.query(query, database=config.db_name)
         df = result.get(station, None)
 
         zurich = pytz.timezone('Europe/Zurich')

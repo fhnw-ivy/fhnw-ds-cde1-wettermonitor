@@ -3,6 +3,8 @@ import os
 import threading
 import time
 
+is_development = os.environ.get("ENVIRONMENT") == "development"
+
 import schedule as schedule
 from flask import Flask, redirect, render_template
 
@@ -12,10 +14,8 @@ import plotting as plt
 import logging
 import logging.handlers as handlers
 
-logging_level = logging.DEBUG if os.getenv("LOG_LEVEL") == "debug" else logging.INFO
-
 logging.basicConfig(
-    level=logging_level,
+    level=logging.DEBUG,
     format="[%(asctime)s] - [%(levelname)s] - [%(module)s] - [%(threadName)s] : %(message)s",
     datefmt='%m/%d/%Y %I:%M:%S %p',
     handlers=[handlers.TimedRotatingFileHandler("app.log", when="midnight", backupCount=7),
@@ -69,8 +69,8 @@ def job_watcher():
 
 
 if __name__ == '__main__':
-    threads =[]
-    flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=6540, debug=True, use_reloader=False))
+    threads = []
+    flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=6540, debug=is_development, use_reloader=False, threaded=True))
     threads.append(flask_thread)
     flask_thread.start()
 
