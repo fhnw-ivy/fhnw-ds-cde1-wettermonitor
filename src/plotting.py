@@ -1,16 +1,11 @@
 import datetime
-
 import schedule
-
-import logging
-logging.basicConfig(
-    filename="plotting.log",
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt='%m/%d/%Y %I:%M:%S %p')
 
 import weather_repository as wr
 import plotly.express as px
+
+import logging
+logger = logging.getLogger("app")
 
 plots_directory = "./templates/plots/"
 
@@ -37,16 +32,16 @@ def save_plot(plot, plot_name, station):
     plot_file_name = f"{station}_{plot_name}.html"
     try:
         plot.write_html(f"{plots_directory}{plot_file_name}")
-        logging.info(f"Saved plot {plot_name}.")
+        logger.debug(f"Saved plot {plot_name}.")
     except Exception as e:
-        logging.error(f"Saving plot {plot_name} failed.")
-        logging.error(e)
+        logger.error(f"Saving plot {plot_name} failed.")
+        logger.error(e)
 
 
 def generate_all_plots():
     for station in wr.get_stations():
         generate_wind_speed_plot_today(station)
-        logging.info(f"Generated plots for station {station}.")
+        logger.debug(f"Generated plots for station {station}.")
 
 
 def init():

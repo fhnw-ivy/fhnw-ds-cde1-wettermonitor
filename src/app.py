@@ -1,4 +1,5 @@
 import datetime
+import os
 import threading
 import time
 
@@ -9,17 +10,26 @@ import weather_repository as wr
 import plotting as plt
 
 import logging
+import logging.handlers as handlers
+
+logging_level = logging.DEBUG if os.getenv("LOG_LEVEL") == "debug" else logging.INFO
+
 logging.basicConfig(
-    filename="app.log",
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt='%m/%d/%Y %I:%M:%S %p')
+    level=logging_level,
+    format="[%(asctime)s] - [%(levelname)s] - [%(module)s] - [%(threadName)s] : %(message)s",
+    datefmt='%m/%d/%Y %I:%M:%S %p',
+    handlers=[handlers.TimedRotatingFileHandler("app.log", when="midnight", backupCount=7),
+              logging.StreamHandler()]
+)
+
+logger = logging.getLogger("app")
+logger.info("Starting app")
+
 
 app = Flask(__name__)
 service_ready = False
 
 loading_template = "loading.html"
-
 
 @app.route('/')
 @app.route('/weatherstation')
@@ -52,7 +62,7 @@ def plots(station: str, plot_name: str):
 
 
 def job_watcher():
-    logging.info("Checking for pending jobs...")
+    logger.info("Checking for pending jobs...")
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -69,11 +79,11 @@ if __name__ == '__main__':
         try:
             wr.init()
 
-            logging.info("Service is ready.")
+            logger.info("Service is ready.")
             service_ready = True
         except Exception as e:
-            logging.error("Weather repo init failed. Retrying in 3s...")
-            logging.error(e)
+            logger.error("Weather repo init failed. Retrying in 3s...")
+            logger.error(e)
             time.sleep(3)
 
     periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
@@ -84,4 +94,4 @@ if __name__ == '__main__':
     plt.init()
 
     job_watcher()
-    logging.info("Application finished.")
+    logger.info("Application finished.")
