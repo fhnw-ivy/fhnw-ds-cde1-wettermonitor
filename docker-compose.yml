@@ -31,4 +31,3 @@ services:
 
 volumes:
   influxdb-storage:
-  chronograf-storage:
