@@ -118,8 +118,7 @@ body {
 </svg>
 <div class="water-jar">
   <div class="water-filling">
-    <div class="percentNum" id="count">0</div>
-    <div class="percentB">%</div>
+    <div class="percentB">Loading...</div>
   </div>
   <div id="water" class="water">
     <svg viewBox="0 0 560 20" class="water_wave water_wave_back">
@@ -132,9 +131,8 @@ body {
 </div>
 
 <script>
-var cnt=document.getElementById("count");
 var water=document.getElementById("water");
-var percent=cnt.innerText;
+var percent=0;
 var interval;
 interval=setInterval(function(){
   percent++;
