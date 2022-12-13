@@ -50,7 +50,7 @@ def wetterstation(station: str):
     weather_query = wr.WeatherQuery(station=station, measurements=measurements)
     weather_data = wr.run_query(weather_query)
 
-    print(weather_data)
+    print(weather_data, 2)
 
     return render_template('index.html', subpage="base", station=station, data=weather_data, refresh_interval=60)
 
