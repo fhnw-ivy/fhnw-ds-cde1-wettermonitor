@@ -3,22 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content={{ refresh_interval }} />
+    <meta http-equiv="refresh" content="{{ refresh_interval }}" />
     <title>Weathermonitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" />
 </head>
 
 <body>
-    <div>
+    <div class="container">
         <header>
-            <ul>
-                <li><a href="/weatherstation/mythenquai">Mythenquai</a></li>
-                <li><a href="/weatherstation/tiefenbrunnen">Tiefenbrunnen</a></li>
-            </ul>
+            <nav class="navbar is-dark">
+                <div class="navbar-start">
+                    <a class="navbar-item" href="/weatherstation/mythenquai">Mythenquai</a>
+                    <a class="navbar-item" href="/weatherstation/tiefenbrunnen">Tiefenbrunnen</a>
+                </div>
+            </nav>
         </header>
 
         <hr />
 
-        <h1>{{station}}</h1>
+        <h1 class="title">{{station}}</h1>
 
         {% include subpage+'.html' %}
     </div>

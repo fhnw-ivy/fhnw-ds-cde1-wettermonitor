@@ -1,15 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content=2 />
-    <title>Loading...</title>
+    <style>
+
+        /* Add animation to the wave */
+        @keyframes wave {
+            0% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+
+        /* Style the wave */
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 100px;
+            width: 100%;
+            background: linear-gradient(to right, #00b8d4, #6ea6ac);
+            background-size: 200% 100%;
+            animation: wave 10s linear infinite;
+        }
+
+        /* Center the loading text */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #00b8d4;
+        }
+
+    </style>
 </head>
-
 <body>
-    <h1 style="text-align: center">Weathermonitor</h1>
-    <h6 style="text-align: center">Loading...</h6>
-</body>
 
+<!-- Add the wave and loading text -->
+<div class="wave"></div>
+<div class="loading">Loading...</div>
+
+</body>
 </html>
