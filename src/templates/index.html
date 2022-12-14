@@ -1,30 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="{{ refresh_interval }}" />
-    <title>Weathermonitor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" />
-</head>
-
 <body>
-    <div class="container">
-        <header>
-            <nav class="navbar is-dark">
-                <div class="navbar-start">
-                    <a class="navbar-item" href="/weatherstation/mythenquai">Mythenquai</a>
-                    <a class="navbar-item" href="/weatherstation/tiefenbrunnen">Tiefenbrunnen</a>
-                </div>
-            </nav>
-        </header>
+<div class="container">
+    <header>
+        <nav class="navbar is-dark">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/weatherstation/mythenquai">Mythenquai</a>
+                <a class="navbar-item" href="/weatherstation/tiefenbrunnen">Tiefenbrunnen</a>
+            </div>
 
-        <hr />
+            <div class="navbar-end">
+          <span class="navbar-item">
+            <span class="tag is-info is-medium" id="status">
+              <span class="icon is-small">
+                <i class="fas fa-circle"></i>
+              </span>
+              <span>Live</span>
+            </span>
+          </span>
+            </div>
+        </nav>
+    </header>
 
-        <h1 class="title">{{station}}</h1>
+    <hr />
 
-        {% include subpage+'.html' %}
-    </div>
+    <h1 class="title">{{station}}</h1>
+
+    {% include subpage+'.html' %}
+</div>
+
+<script>
+    if (navigator.onLine) {
+        // Set the text and color of the status bar
+        document.getElementById('status').innerHTML = 'Live';
+        document.getElementById('status').classList.remove('is-danger');
+        document.getElementById('status').classList.add('is-info');
+    } else {
+        document.getElementById('status').innerHTML = 'Offline';
+        document.getElementById('status').classList.remove('is-info');
+        document.getElementById('status').classList.add('is-danger');
+    }
+</script>
 </body>
-
-</html>
