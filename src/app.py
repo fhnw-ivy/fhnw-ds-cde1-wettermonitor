@@ -3,7 +3,7 @@ import os
 import threading
 import time
 
-from src.service_status import ServiceStatus
+from service_status import ServiceStatus
 
 is_development = os.environ.get("ENVIRONMENT") == "development"
 

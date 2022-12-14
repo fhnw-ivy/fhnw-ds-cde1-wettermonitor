@@ -34,7 +34,7 @@ import pytz
 
 import logging
 
-from src.service_status import ServiceStatus
+from service_status import ServiceStatus
 
 logger = logging.getLogger("app")
 
