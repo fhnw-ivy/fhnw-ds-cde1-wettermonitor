@@ -15,12 +15,17 @@
         }
         .container {
             height: 100%;
+            max-width: 100% !important;
+        }
+        .box {
+            height: 100%;
+            margin: 2em;
         }
     </style>
 </head>
 
 <body>
-<div class="container" style="max-width: 100%">
+<div class="container">
     <header>
         <nav class="navbar is-dark">
             <div class="navbar-start">
@@ -42,10 +47,10 @@
     </header>
 
     <hr />
-
-    <h1 class="title">{{station}}</h1>
-
-    {% include subpage+'.html' %}
+    <div class="box">
+        <h1 class="title">{{station}}</h1>
+        {% include subpage+'.html' %}
+    </div>
 </div>
 
 <script>
