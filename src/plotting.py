@@ -1,4 +1,6 @@
 import datetime
+import os
+
 import schedule
 
 import weather_repository as wr
@@ -7,31 +9,42 @@ import plotly.express as px
 import logging
 logger = logging.getLogger("app")
 
-plots_directory = "./templates/plots/"
+plots_directory = "./static/plots/"
 
-
-# Generate plot for the past 24 hours for a given station and the wind speeds
 def generate_wind_speed_plot_today(station: str):
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    measurements = [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min]
-
-    weather_query = wr.WeatherQuery(station=station, measurements=measurements, start_time=start_time,
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min], start_time=start_time,
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
-    plot = px.line(weather_data, x="time", y=["wind_speed_avg_10min", "wind_gust_max_10min"],
-                   title="Windgeschwindigkeit (10min Mittelwert und Spitzenwert) der letzten 24 Stunden für " + station,
-                   labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"},
-                   template="plotly_dark")
+    plot = px.line(weather_data, x="time", y="wind_speed_avg_10min",
+                   title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden",
+                   labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
     save_plot(plot, "wind_speed", station)
 
+def generate_wind_direction_plot(station: str):
+    start_time = datetime.datetime.now() - datetime.timedelta(hours=6)
+    stop_time = datetime.datetime.now()
+
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction], start_time=start_time,
+                                    stop_time=stop_time)
+    weather_data = wr.run_query(weather_query)
+
+    plot = px.bar_polar(weather_data, r="wind_speed_avg_10min", theta="wind_direction",
+                        title="Windrichtung (10min Mittelwert) der letzten Stunde",
+                        labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
+    save_plot(plot, "wind_direction", station)
 
 def save_plot(plot, plot_name, station):
-    plot_file_name = f"{station}_{plot_name}.html"
+    if not os.path.exists(plots_directory + station):
+        os.makedirs(plots_directory + station)
+
+    plot_file_name = f"{station}/{plot_name}"
+
     try:
-        plot.write_html(f"{plots_directory}{plot_file_name}")
+        plot.write_image(f"{plots_directory}{plot_file_name}.svg")
         logger.debug(f"Saved plot {plot_name}.")
     except Exception as e:
         logger.error(f"Saving plot {plot_name} failed.")
@@ -41,8 +54,9 @@ def save_plot(plot, plot_name, station):
 def generate_all_plots():
     for station in wr.get_stations():
         generate_wind_speed_plot_today(station)
-        logger.debug(f"Generated plots for station {station}.")
+        generate_wind_direction_plot(station)
 
+        logger.debug(f"Generated plots for station {station}.")
 
 def init():
     # First generate all plots

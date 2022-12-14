@@ -3,6 +3,8 @@ import os
 import threading
 import time
 
+from src.service_status import ServiceStatus
+
 is_development = os.environ.get("ENVIRONMENT") == "development"
 
 import schedule as schedule
@@ -50,17 +52,19 @@ def wetterstation(station: str):
     weather_query = wr.WeatherQuery(station=station, measurements=measurements)
     weather_data = wr.run_query(weather_query)
 
-    print(weather_data, 2)
-
-    return render_template('index.html', subpage="base", station=station, data=weather_data, refresh_interval=60)
+    return render_template('index.html', subpage="station", station=station, data=weather_data, status=ServiceStatus.get_status(), refresh_interval=60)
 
 
-@app.route("/weatherstation/<station>/plots/<plot_name>")
-def plots(station: str, plot_name: str):
+@app.route('/weatherstation/<station>/plots')
+def plots_index(station: str):
+    return redirect(f"/weatherstation/{station}/plots/wind_speed")
+
+@app.route("/weatherstation/<station>/plots/<plot_type>")
+def plots(station: str, plot_type: str):
     if not service_ready:
         return render_template(loading_template)
 
-    return render_template(f'plots/{station}_{plot_name}.html')
+    return render_template('index.html', subpage="plots", station=station, plot_type=plot_type, status=ServiceStatus.get_status(), refresh_interval=60)
 
 
 def job_watcher():

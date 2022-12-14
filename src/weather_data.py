@@ -33,6 +33,9 @@ from requests.exceptions import ConnectionError
 import pytz
 
 import logging
+
+from src.service_status import ServiceStatus
+
 logger = logging.getLogger("app")
 
 class Config:
@@ -165,7 +168,7 @@ def import_latest_data(config, periodic_read=False):
 
     if periodic_read and threading.current_thread() is threading.main_thread():
         signal.signal(signal.SIGINT, __signal_handler)
-        logger.info('\nPress Ctrl+C to stop!\n')
+        logger.debug('\nPress Ctrl+C to stop!\n')
     check_db_day = min(last_db_days)
     check_db_day = check_db_day.replace(hour=0, minute=0, second=0,
                                         microsecond=0)
@@ -186,7 +189,7 @@ def import_latest_data(config, periodic_read=False):
             #                                  microsecond=0)
             sleep_sec = (sleep_until - current_time).total_seconds()
 
-            logger.info('Sleep for ' + str(sleep_sec) + 's (from ' + str(
+            logger.debug('Sleep for ' + str(sleep_sec) + 's (from ' + str(
                 current_time) + ' until ' + str(
                 sleep_until) + ') when next data will be queried.')
             sleep(sleep_sec)
@@ -212,11 +215,15 @@ def import_latest_data(config, periodic_read=False):
 
             if normalized_data.size > 0:
                 __add_data_to_db(config, normalized_data, station)
-                logger.info('Handle ' + station + ' from ' + str(
+                logger.debug('Handle ' + station + ' from ' + str(
                     normalized_data.index[0]) + ' to ' + str(
                     normalized_data.index[-1]))
             else:
-                logger.info('No new data received for ' + station)
+                logger.debug('No new data received for ' + station)
+
+            ServiceStatus.last_fetch = datetime.utcnow()
+            ServiceStatus.is_live = True
+
         if check_db_day < current_day:
             check_db_day = check_db_day + pd.DateOffset(1)
         elif periodic_read and check_db_day >= current_day:
@@ -253,7 +260,7 @@ def __get_last_db_entry(config, station):
             last_entry = config.client.query(query)
         except:
             # There are influxDB versions which have an issue with above query
-            logger.info(
+            logger.error(
                 'An exception occurred while querying last entry from DB for ',
                 station, '. Try alternative approach.')
             query = f'SELECT * FROM {station} ORDER BY time DESC LIMIT 1'
@@ -284,7 +291,7 @@ def __get_data_of_day(day, station):
     day_str = day.strftime('%Y-%m-%d')
     end_date = day + timedelta(days=1)
     end_day_str = end_date.strftime('%Y-%m-%d')
-    logger.info('Query ' + station + ' at ' + day_str)
+    logger.debug('Query ' + station + ' at ' + day_str)
     payload = {
         'startDate': day_str,
         'endDate': end_day_str

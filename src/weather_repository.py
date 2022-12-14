@@ -9,6 +9,9 @@ from pandas import DataFrame
 import weather_data as wd
 
 import logging
+
+from src.service_status import ServiceStatus
+
 logger = logging.getLogger("app")
 
 class Measurement(enum.Enum):
@@ -87,11 +90,13 @@ def init() -> None:
 def import_latest_data_periodic() -> None:
     try:
         logger.info("Periodic read started.")
+        ServiceStatus.is_live = True
 
         wd.import_latest_data(config, periodic_read=True)
         logger.info("Periodic read finished.")
 
     except Exception as e:
+        ServiceStatus.is_live = False
         logger.error("Periodic read failed.")
         logger.error(e)
 

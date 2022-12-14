@@ -1,0 +1,11 @@
+<ul>
+    <li>
+        <a href="/weatherstation/{{station}}/plots/wind_speed">Wind Speed</a>
+    </li>
+    <li>
+        <a href="/weatherstation/{{station}}/plots/wind_direction">Wind Direction</a>
+    </li>
+</ul>
+
+<object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%">
+</object>

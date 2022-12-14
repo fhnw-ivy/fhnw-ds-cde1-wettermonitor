@@ -186,4 +186,4 @@ fabric.properties
 
 .DS_Store
 
-src/templates/plots/*.html
+src/static/plots
