@@ -29,22 +29,32 @@
     <header>
         <nav class="navbar is-dark">
             <div class="navbar-start">
-                <a class="navbar-item" href="/weatherstation/mythenquai">Mythenquai</a>
-                <a class="navbar-item" href="/weatherstation/tiefenbrunnen">Tiefenbrunnen</a>
+                {%for station in station_list%}
+
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link" href="/weatherstation/{{station.lower()}}">{{station}}</a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/weatherstation/{{station.lower()}}/plots/wind_speed">Wind Speed</a>
+                        <a class="navbar-item" href="/weatherstation/{{station.lower()}}/plots/wind_direction">Wind Direction</a>
+                    </div>
+                </div>
+
+                {%endfor%}
             </div>
 
             <div class="navbar-end">
-          <span class="navbar-item">
-            <span class="tag is-info is-medium" id="status">
-              <span class="icon is-small">
-                <i class="fas fa-circle"></i>
+              <span class="navbar-item">
+                <span class="tag is-info is-medium" id="status">
+                  <span class="icon is-small">
+                    <i class="fas fa-circle"></i>
+                  </span>
+                  <span>Live</span>
+                </span>
               </span>
-              <span>Live</span>
-            </span>
-          </span>
             </div>
         </nav>
     </header>
+
 
     <hr />
     <div class="box">

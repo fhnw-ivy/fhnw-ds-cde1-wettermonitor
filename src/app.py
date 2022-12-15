@@ -33,6 +33,9 @@ service_ready = False
 
 loading_template = "loading.html"
 
+station_list = ['Mythenquai', 'Tiefenbrunnen']
+
+
 @app.route('/')
 @app.route('/weatherstation')
 def index():
@@ -52,7 +55,8 @@ def wetterstation(station: str):
     weather_query = wr.WeatherQuery(station=station, measurements=measurements)
     weather_data = wr.run_query(weather_query)
 
-    return render_template('index.html', subpage="station", station=station, data=weather_data, status=ServiceStatus.get_status(), refresh_interval=60)
+    return render_template('index.html', subpage="station", station=station, data=weather_data,
+                           station_list=station_list, status=ServiceStatus.get_status(), refresh_interval=60)
 
 
 @app.route('/weatherstation/<station>/plots')
@@ -64,7 +68,8 @@ def plots(station: str, plot_type: str):
     if not service_ready:
         return render_template(loading_template)
 
-    return render_template('index.html', subpage="plots", station=station, plot_type=plot_type, status=ServiceStatus.get_status(), refresh_interval=60)
+    return render_template('index.html', subpage="plots", station=station, plot_type=plot_type,
+                           status=ServiceStatus.get_status(), refresh_interval=60, station_list=station_list)
 
 
 def job_watcher():
