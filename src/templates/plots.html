@@ -1,11 +1,25 @@
-<ul>
-    <li>
-        <a href="/weatherstation/{{station}}/plots/wind_speed">Wind Speed</a>
-    </li>
-    <li>
-        <a href="/weatherstation/{{station}}/plots/wind_direction">Wind Direction</a>
-    </li>
-</ul>
+<button id="button1" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_speed">Wind Speed</a></button>
+<button id="button2" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_direction">Wind Direction</a></button>
 
-<object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%">
-</object>
+<object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
+<script>
+    // Get a reference to the buttons
+    var button1 = document.getElementById('button1');
+    var button2 = document.getElementById('button2');
+
+    // Create a new Hammer instance to detect swipe gestures
+    var hammer = new Hammer(document);
+
+    // Listen for swipe gestures
+    hammer.on('swipe', function(event) {
+        // Check the direction of the swipe
+        if (event.direction == 'left') {
+            // Swipe left, so trigger a click event on button1
+            button1.click();
+        } else if (event.direction == 'right') {
+            // Swipe right, so trigger a click event on button2
+            button2.click();
+        }
+    });
+</script>
+

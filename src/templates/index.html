@@ -11,7 +11,7 @@
         html, body {
             height: 100%;
             margin: 0;
-            padding: 0;
+            padding: 3em 0 0;
         }
         .container {
             height: 100%;
@@ -22,12 +22,13 @@
             margin: 2em;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 </head>
 
 <body>
 <div class="container">
     <header>
-        <nav class="navbar is-dark">
+        <nav class="navbar is-dark is-fixed-top">
             <div class="navbar-start">
                 {%for station in station_list%}
 
