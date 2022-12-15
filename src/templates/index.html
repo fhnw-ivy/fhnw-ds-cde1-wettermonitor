@@ -59,12 +59,13 @@
     <hr />
     <div class="box">
         <h1 class="title">{{station}}</h1>
+        <h2 last_updated class="subtitle">Last updated: {{status[1]}}</h2>
         {% include subpage+'.html' %}
     </div>
 </div>
 
 <script>
-    if (navigator.onLine) {
+    if (navigator.onLine && '{{status[0]}}' === 'True') {
         // Set the text and color of the status bar
         document.getElementById('status').innerHTML = 'Live';
         document.getElementById('status').classList.remove('is-danger');
