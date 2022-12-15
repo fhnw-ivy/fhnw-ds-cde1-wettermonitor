@@ -50,16 +50,23 @@ def save_plot(plot, plot_name, station):
         logger.error(f"Saving plot {plot_name} failed.")
         logger.error(e)
 
-
+# Generate each plot for each station and catch any errors retry every single plot 3 times
 def generate_all_plots():
     for station in wr.get_stations():
-        generate_wind_speed_plot_today(station)
-        generate_wind_direction_plot(station)
+        try:
+            generate_wind_speed_plot_today(station)
+        except Exception as e:
+            logger.error(f"Generating wind speed plot for station {station} failed.")
+            logger.error(e)
 
-        logger.debug(f"Generated plots for station {station}.")
+        try:
+            generate_wind_direction_plot(station)
+        except Exception as e:
+            logger.error(f"Generating wind direction plot for station {station} failed.")
+            logger.error(e)
 
 def init():
-    # First generate all plots
+    # First generate all plots®
     generate_all_plots()
 
     # Then schedule the generation of new plots every 10 minutes

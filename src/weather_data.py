@@ -99,10 +99,9 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
         result = config.client.query(query, database=config.db_name)
         df = result.get(station, None)
 
-        zurich = pytz.timezone('Europe/Zurich')
-        df.index = df.index.map(lambda date: date.astimezone(zurich))
-        df["time"] = df.index
-        df = df.reset_index(drop=True)
+        # Convert dataframe index to zurich timezone
+        if df is not None:
+            df.index = df.index.tz_convert('Europe/Zurich')
 
         return df
 
@@ -221,7 +220,7 @@ def import_latest_data(config, periodic_read=False):
             else:
                 logger.debug('No new data received for ' + station)
 
-            ServiceStatus.last_fetch = datetime.utcnow()
+            ServiceStatus.update_last_fetch()
             ServiceStatus.is_live = True
 
         if check_db_day < current_day:
