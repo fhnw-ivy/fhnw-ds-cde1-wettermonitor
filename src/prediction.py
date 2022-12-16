@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 def getPredictionFor(station: str, air_temperature_10min_before: float, wind_speed_avg_10min_before: float, wind_direction_10min_before: float, day: int, month: int, year: int):
-    with open('../prediction/weather_model.pkl', 'rb') as f:
+    with open('./weather_model.pkl', 'rb') as f:
         model = pickle.load(f)
 
         pred_df = pd.DataFrame({

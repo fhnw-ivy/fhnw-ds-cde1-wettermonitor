@@ -186,7 +186,7 @@ fabric.properties
 # .idea
 
 # Models
-prediction/weather_model.pkl
+*.pkl
 
 .DS_Store
 

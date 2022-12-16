@@ -8,6 +8,9 @@ RUN pip install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 COPY ./src .
-COPY ./prediction/*.pkl ./prediction
+
+COPY download_model.sh download_model.sh
+RUN chmod +x download_model.sh
+RUN download_model.sh
 
 CMD [ "python3", "./app.py" ]
