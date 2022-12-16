@@ -19,7 +19,7 @@ def generate_wind_speed_plot_today(station: str):
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
-    plot = px.line(weather_data, x="time", y="wind_speed_avg_10min",
+    plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min",
                    title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden",
                    labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
     save_plot(plot, "wind_speed", station)
@@ -44,8 +44,8 @@ def save_plot(plot, plot_name, station):
     plot_file_name = f"{station}/{plot_name}"
 
     try:
-        plot.write_image(f"{plots_directory}{plot_file_name}.svg")
-        logger.debug(f"Saved plot {plot_name}.")
+        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".svg"))
+        logger.debug(f"Saved plot {plot_name} for station {station} as svg file.")
     except Exception as e:
         logger.error(f"Saving plot {plot_name} failed.")
         logger.error(e)

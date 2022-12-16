@@ -191,3 +191,7 @@ prediction/weather_model.pkl
 .DS_Store
 
 src/static/plots
+
+*.log*
+
+.idea
