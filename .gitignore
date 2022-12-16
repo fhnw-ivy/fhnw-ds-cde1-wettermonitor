@@ -189,3 +189,5 @@ fabric.properties
 src/static/plots
 
 *.log*
+
+.idea
