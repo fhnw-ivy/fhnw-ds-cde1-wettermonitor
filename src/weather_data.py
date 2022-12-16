@@ -16,6 +16,7 @@ Last Update:
 """
 
 import json
+import logging
 import os
 import signal
 import sys
@@ -30,9 +31,6 @@ import requests
 from influxdb import DataFrameClient
 from pandas import json_normalize
 from requests.exceptions import ConnectionError
-import pytz
-
-import logging
 
 from service_status import ServiceStatus
 

@@ -19,7 +19,7 @@ def generate_wind_speed_plot_today(station: str):
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
-    plot = px.line(weather_data, x="time", y="wind_speed_avg_10min",
+    plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min",
                    title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden",
                    labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
     save_plot(plot, "wind_speed", station)

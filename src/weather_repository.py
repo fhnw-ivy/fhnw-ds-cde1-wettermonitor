@@ -87,6 +87,10 @@ def init() -> None:
 
     logger.debug("CSV import finished.")
 
+    logger.debug("Starting periodic read..")
+    # wd.import_latest_data(config=config, periodic_read=False)
+    logger.debug("Periodic read finished.")
+
 def import_latest_data_periodic() -> None:
     try:
         logger.info("Periodic read started.")
