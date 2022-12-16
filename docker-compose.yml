@@ -27,7 +27,7 @@ services:
     image: containrrr/watchtower
     container_name: watchtower
     restart: always
-    command: --cleanup --schedule ${WATCHTOWER_SCHEDULE} --rolling-restart
+    command: --cleanup --interval 30 --rolling-restart
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
