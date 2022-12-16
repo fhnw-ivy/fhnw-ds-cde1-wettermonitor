@@ -8,6 +8,6 @@ RUN pip install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 COPY ./src .
-RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1cNj78NN6y2vfpBrPt-4Jz3K4y5ZFKW9l' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1cNj78NN6y2vfpBrPt-4Jz3K4y5ZFKW9l" -O /app/predictions/weather_model.pkl && rm -rf /tmp/cookies.txt
+COPY ./prediction/*.pkl ./prediction
 
 CMD [ "python3", "./app.py" ]
