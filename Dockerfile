@@ -11,6 +11,6 @@ COPY ./src .
 
 COPY download_model.sh download_model.sh
 RUN chmod +x download_model.sh
-RUN download_model.sh
+RUN ./download_model.sh
 
 CMD [ "python3", "./app.py" ]
