@@ -112,6 +112,7 @@ pip-selfcheck.json
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/discord.xml
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -183,6 +184,9 @@ fabric.properties
 
 # idea folder, uncomment if you don't need it
 # .idea
+
+# Models
+prediction/weather_model.pkl
 
 .DS_Store
 

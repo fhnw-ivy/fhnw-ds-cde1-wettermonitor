@@ -12,6 +12,7 @@ from flask import Flask, redirect, render_template
 
 import weather_repository as wr
 import plotting as plt
+import prediction as pred
 
 import logging
 import logging.handlers as handlers
@@ -70,6 +71,22 @@ def plots(station: str, plot_type: str):
 
     return render_template('index.html', subpage="plots", station=station, plot_type=plot_type,
                            status=ServiceStatus.get_status(), refresh_interval=60, station_list=station_list)
+
+@app.route("/weatherstation/<station>/predictions")
+def predictions(station: str):
+    measurements = [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction, wr.Measurement.Air_temp]
+
+    pred_query = wr.WeatherQuery(station=station, measurements=measurements)
+    pred_data = wr.run_query(pred_query)
+
+    prediction_data = pred.getPredictionFor(station, wind_speed_avg_10min_before=pred_data['wind_speed_avg_10min'],
+                                            wind_direction_10min_before=pred_data['wind_direction'],
+                                            air_temperature_10min_before=pred_data['air_temperature'],
+                                            day=datetime.datetime.now().day, month=datetime.datetime.now().month,
+                                            year=datetime.datetime.now().year)
+
+    return render_template('index.html', subpage="prediction", station=station, prediction=prediction_data,
+                           station_list=station_list, status=ServiceStatus.get_status(), refresh_interval=60)
 
 
 def job_watcher():
