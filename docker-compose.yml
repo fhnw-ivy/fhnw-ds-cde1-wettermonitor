@@ -28,6 +28,8 @@ services:
     container_name: watchtower
     restart: always
     command: --cleanup --schedule ${WATCHTOWER_SCHEDULE} --rolling-restart
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   influxdb-storage:
