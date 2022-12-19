@@ -10,6 +10,9 @@ curl -fsSL https://raw.githubusercontent.com/fhnw-ivy/fhnw-ds-cde1-wettermonitor
 sudo sh ./get-weather-monitor.sh
 ```
 
+## OS
+- Raspberry Pi OS (64-bit)
+
 ## Resources
 
 - https://tecdottir.herokuapp.com/docs/
