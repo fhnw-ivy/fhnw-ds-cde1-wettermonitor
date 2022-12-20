@@ -36,6 +36,7 @@ from service_status import ServiceStatus
 
 logger = logging.getLogger("app")
 
+
 class Config:
     db_host = 'localhost'
     db_port = 8086
@@ -305,7 +306,7 @@ def __get_data_of_day(day, station):
                 break
         except ConnectionError as e:
             logger.error(f"Request for '{e.request.url}' failed."
-                  f"({e.args[0].args[0]})\nTrying again in 10 seconds...")
+                         f"({e.args[0].args[0]})\nTrying again in 10 seconds...")
             sleep(10)
 
 

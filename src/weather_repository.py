@@ -1,5 +1,6 @@
 import datetime
 import enum
+import logging
 import os
 import time
 from builtins import str
@@ -7,12 +8,10 @@ from builtins import str
 from pandas import DataFrame
 
 import weather_data as wd
-
-import logging
-
 from service_status import ServiceStatus
 
 logger = logging.getLogger("app")
+
 
 class Measurement(enum.Enum):
     Air_temp = "air_temperature"
@@ -88,8 +87,10 @@ def init() -> None:
     logger.debug("CSV import finished.")
 
     logger.debug("Starting periodic read..")
-    # wd.import_latest_data(config=config, periodic_read=False)
+    # Ensure that data is available before starting the service is ready
+    wd.import_latest_data(config=config, periodic_read=False)
     logger.debug("Periodic read finished.")
+
 
 def import_latest_data_periodic() -> None:
     try:

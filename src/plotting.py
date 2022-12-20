@@ -66,7 +66,7 @@ def generate_all_plots():
             logger.error(e)
 
 def init():
-    # First generate all plots®
+    # First generate all plots
     generate_all_plots()
 
     # Then schedule the generation of new plots every 10 minutes
