@@ -3,6 +3,8 @@ import os
 import threading
 import time
 
+import pandas as pd
+
 from service_status import ServiceStatus
 
 is_development = os.environ.get("ENVIRONMENT") == "development"
@@ -49,8 +51,15 @@ def wetterstation(station: str):
 
     measurements = [wr.Measurement.Humidity, wr.Measurement.Pressure, wr.Measurement.Air_temp]
 
-    weather_query = wr.WeatherQuery(station=station, measurements=measurements)
-    weather_data = wr.run_query(weather_query)
+    weather_data = pd.DataFrame()
+    try:
+        weather_query = wr.WeatherQuery(station=station, measurements=measurements)
+        weather_data = wr.run_query(weather_query)
+
+        if weather_data is None:
+            weather_data = pd.DataFrame()
+    except Exception as e:
+        logger.error(f"Error while loading data: {e}")
 
     return render_template('index.html', subpage="station", station=station, data=weather_data,
                            station_list=wr.get_stations(), status=ServiceStatus.get_status(),
@@ -77,59 +86,62 @@ def predictions(station: str):
     if not service_ready:
         return render_template(loading_template)
 
-    prediction_data = pred.get_cached_predictions(station)
-    if prediction_data is None:
-        measurements = [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction, wr.Measurement.Air_temp]
-
-        pred_query = wr.WeatherQuery(station=station, measurements=measurements)
-        pred_data = wr.run_query(pred_query)
-
-        prediction_data = pred.get_predictions(station, wind_speed_avg_10min_before=pred_data['wind_speed_avg_10min'],
-                                               wind_direction_10min_before=pred_data['wind_direction'],
-                                               air_temperature_10min_before=pred_data['air_temperature'],
-                                               day=datetime.datetime.now().day, month=datetime.datetime.now().month,
-                                               year=datetime.datetime.now().year)
+    prediction_data = []
+    try:
+        prediction_data = pred.get_predictions(station)
+    except Exception as e:
+        logger.error(f"Error while loading data: {e}")
 
     return render_template('index.html', subpage="prediction", station=station, prediction=prediction_data,
                            station_list=wr.get_stations(), status=ServiceStatus.get_status(),
                            refresh_interval=default_refresh_interval)
 
-
 def job_watcher():
     logger.info("Checking for pending jobs...")
     while True:
-        schedule.run_pending()
-        time.sleep(1)
+        try:
+            schedule.run_pending()
+            time.sleep(1)
+        except Exception as e:
+            logger.error(f"Error while running job: {e}")
 
 
 if __name__ == '__main__':
     threads = []
-    flask_thread = threading.Thread(
-        target=lambda: app.run(host='0.0.0.0', port=6540, debug=is_development, use_reloader=False, threaded=True))
-    threads.append(flask_thread)
-    flask_thread.start()
 
-    # Weather repository
     while not service_ready:
         try:
+            # Flask
+            flask_thread = threading.Thread(
+                target=lambda: app.run(host='0.0.0.0', port=6540, debug=is_development, use_reloader=False,
+                                       threaded=True))
+            threads.append(flask_thread)
+            flask_thread.start()
+
+            # Weather repository
             wr.init()
+
+            # Prediction
+            pred.init()
+
+            # Plotting
+            plt.init()
+
+            # Start periodic data read
+            periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
+            threads.append(periodic_read_thread)
+            periodic_read_thread.start()
+
+            # Schedule health check
+            wr.health_check()
+            schedule.every(default_refresh_interval).seconds.do(wr.health_check)
 
             logger.info("Service is ready.")
             service_ready = True
         except Exception as e:
-            logger.error("Weather repo init failed. Retrying in 3s...")
+            logger.error("Service init failed. Retrying in 3s...")
             logger.error(e)
             time.sleep(3)
-
-    periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
-    threads.append(periodic_read_thread)
-    periodic_read_thread.start()
-
-    # Plotting
-    plt.init()
-
-    # Prediction
-    pred.init()
 
     job_watcher()
     logger.info("Application finished.")

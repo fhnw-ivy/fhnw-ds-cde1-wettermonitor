@@ -32,7 +32,6 @@ from influxdb import DataFrameClient
 from pandas import json_normalize
 from requests.exceptions import ConnectionError
 
-from service_status import ServiceStatus
 
 logger = logging.getLogger("app")
 
@@ -218,9 +217,6 @@ def import_latest_data(config, periodic_read=False):
                     normalized_data.index[-1]))
             else:
                 logger.debug('No new data received for ' + station)
-
-            ServiceStatus.update_last_fetch()
-            ServiceStatus.is_live = True
 
         if check_db_day < current_day:
             check_db_day = check_db_day + pd.DateOffset(1)

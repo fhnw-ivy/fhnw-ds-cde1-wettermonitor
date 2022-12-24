@@ -123,3 +123,23 @@ def run_query(query: WeatherQuery) -> DataFrame | None:
 
 def get_stations():
     return config.stations
+
+def health_check():
+    try:
+        query = WeatherQuery(station=config.stations[0], measurements=[Measurement.Air_temp])
+        data = run_query(query)
+
+        if data is not None and len(data) > 0:
+            ServiceStatus.last_fetch = data.index[-1]
+            ServiceStatus.last_update = ServiceStatus.last_fetch
+            ServiceStatus.is_live = True
+
+            logger.debug("Health check successful.")
+            return True
+
+    except Exception as e:
+        logger.error(e)
+
+    logger.error("Health check failed.")
+    ServiceStatus.is_live = False
+    return False

@@ -22,24 +22,13 @@ def generate_wind_speed_plot_with_predictions(station: str):
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
-    prediction_query = wr.WeatherQuery(station, [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction,
-                                                 wr.Measurement.Air_temp])
-    pred_data = wr.run_query(prediction_query)
-
-    predictions = pr.get_predictions(station, wind_speed_avg_10min_before=pred_data['wind_speed_avg_10min'],
-                                     wind_direction_10min_before=pred_data['wind_direction'],
-                                     air_temperature_10min_before=pred_data['air_temperature'],
-                                     day=datetime.datetime.now().day, month=datetime.datetime.now().month,
-                                     year=datetime.datetime.now().year)
-
-    latest_data_datetime = pred_data.index[-1]
-    predictions = pr.convert_labelled_predictions_to_relative_datetime(predictions, latest_data_datetime, 0)
+    predictions = pr.get_predictions(station, relative_datetime_labels=True)
 
     plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min",
                    title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden",
                    labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
 
-    plot.add_scatter(x=list(predictions.keys()), y=list(predictions.values()), mode='markers', name='Vorhersage')
+    plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='markers', name='Vorhersage')
 
     plot.update_layout(
         title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden und Vorhersage der nächsten Stunde",
@@ -60,18 +49,7 @@ def generate_wind_speed_and_direction_plot_with_predictions(station: str):
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
-    prediction_query = wr.WeatherQuery(station, [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction,
-                                                 wr.Measurement.Air_temp])
-    pred_data = wr.run_query(prediction_query)
-
-    predictions = pr.get_predictions(station, wind_speed_avg_10min_before=pred_data['wind_speed_avg_10min'],
-                                     wind_direction_10min_before=pred_data['wind_direction'],
-                                     air_temperature_10min_before=pred_data['air_temperature'],
-                                     day=datetime.datetime.now().day, month=datetime.datetime.now().month,
-                                     year=datetime.datetime.now().year)
-
-    latest_data_datetime = pred_data.index[-1]
-    predictions = pr.convert_labelled_predictions_to_relative_datetime(predictions, latest_data_datetime)
+    predictions = pr.get_predictions(station, relative_datetime_labels=True)
 
     plot = px.bar_polar(weather_data, r="wind_speed_avg_10min", theta="wind_direction",
                         title="Windgeschwindigkeit (10min Mittelwert) und Windrichtung der letzten 24 Stunden",
