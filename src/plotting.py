@@ -1,41 +1,91 @@
 import datetime
+import logging
 import os
 
+import plotly.express as px
 import schedule
 
+import prediction as pr
 import weather_repository as wr
-import plotly.express as px
 
-import logging
 logger = logging.getLogger("app")
 
 plots_directory = "./static/plots/"
 
-def generate_wind_speed_plot_today(station: str):
+
+def generate_wind_speed_plot_with_predictions(station: str):
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min], start_time=start_time,
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min],
+                                    start_time=start_time,
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
+
+    prediction_query = wr.WeatherQuery(station, [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction,
+                                                 wr.Measurement.Air_temp])
+    pred_data = wr.run_query(prediction_query)
+
+    predictions = pr.get_predictions(station, wind_speed_avg_10min_before=pred_data['wind_speed_avg_10min'],
+                                     wind_direction_10min_before=pred_data['wind_direction'],
+                                     air_temperature_10min_before=pred_data['air_temperature'],
+                                     day=datetime.datetime.now().day, month=datetime.datetime.now().month,
+                                     year=datetime.datetime.now().year)
+
+    latest_data_datetime = pred_data.index[-1]
+    predictions = pr.convert_labelled_predictions_to_relative_datetime(predictions, latest_data_datetime, 0)
 
     plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min",
                    title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden",
                    labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
-    save_plot(plot, "wind_speed", station)
 
-def generate_wind_direction_plot(station: str):
-    start_time = datetime.datetime.now() - datetime.timedelta(hours=6)
+    plot.add_scatter(x=list(predictions.keys()), y=list(predictions.values()), mode='markers', name='Vorhersage')
+
+    plot.update_layout(
+        title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden und Vorhersage der nächsten Stunde",
+        xaxis_title="Zeit",
+        yaxis_title="Windgeschwindigkeit (m/s) (10min Mittelwert)",
+    )
+
+    save_plot(plot, "wind_speed_with_predictions", station)
+
+
+def generate_wind_speed_and_direction_plot_with_predictions(station: str):
+    start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction], start_time=start_time,
+    weather_query = wr.WeatherQuery(station=station,
+                                    measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction],
+                                    start_time=start_time,
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
+    prediction_query = wr.WeatherQuery(station, [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction,
+                                                 wr.Measurement.Air_temp])
+    pred_data = wr.run_query(prediction_query)
+
+    predictions = pr.get_predictions(station, wind_speed_avg_10min_before=pred_data['wind_speed_avg_10min'],
+                                     wind_direction_10min_before=pred_data['wind_direction'],
+                                     air_temperature_10min_before=pred_data['air_temperature'],
+                                     day=datetime.datetime.now().day, month=datetime.datetime.now().month,
+                                     year=datetime.datetime.now().year)
+
+    latest_data_datetime = pred_data.index[-1]
+    predictions = pr.convert_labelled_predictions_to_relative_datetime(predictions, latest_data_datetime)
+
     plot = px.bar_polar(weather_data, r="wind_speed_avg_10min", theta="wind_direction",
-                        title="Windrichtung (10min Mittelwert) der letzten Stunde",
+                        title="Windgeschwindigkeit (10min Mittelwert) und Windrichtung der letzten 24 Stunden",
                         labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
-    save_plot(plot, "wind_direction", station)
+
+    plot.add_barpolar(r=list(x[0] for x in predictions.values()), theta=list(x[1] for x in predictions.values()),
+                      name='Vorhersage')
+
+    plot.update_layout(
+        title="Windgeschwindigkeit (10min Mittelwert) und Windrichtung der letzten 24 Stunden und Vorhersage der nächsten Stunde"
+    )
+
+    save_plot(plot, "wind_speed_and_direction_with_predictions", station)
+
 
 def save_plot(plot, plot_name, station):
     if not os.path.exists(plots_directory + station):
@@ -50,20 +100,21 @@ def save_plot(plot, plot_name, station):
         logger.error(f"Saving plot {plot_name} failed.")
         logger.error(e)
 
-# Generate each plot for each station and catch any errors retry every single plot 3 times
+
 def generate_all_plots():
     for station in wr.get_stations():
         try:
-            generate_wind_speed_plot_today(station)
+            generate_wind_speed_plot_with_predictions(station)
         except Exception as e:
             logger.error(f"Generating wind speed plot for station {station} failed.")
             logger.error(e)
 
         try:
-            generate_wind_direction_plot(station)
+            generate_wind_speed_and_direction_plot_with_predictions(station)
         except Exception as e:
             logger.error(f"Generating wind direction plot for station {station} failed.")
             logger.error(e)
+
 
 def init():
     # First generate all plots

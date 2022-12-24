@@ -30,6 +30,7 @@ service_ready = False
 loading_template = "loading.html"
 default_refresh_interval = 10
 default_station = wr.get_stations()[0]
+default_plot_type = "wind_speed_with_predictions"
 
 
 @app.route('/')
@@ -58,7 +59,7 @@ def wetterstation(station: str):
 
 @app.route('/weatherstation/<station>/plots')
 def plots_index(station: str):
-    return redirect(f"/weatherstation/{station}/plots/wind_speed")
+    return redirect(f"/weatherstation/{station}/plots/{default_plot_type}")
 
 
 @app.route("/weatherstation/<station>/plots/<plot_type>")

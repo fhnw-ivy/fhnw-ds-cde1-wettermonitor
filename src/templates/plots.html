@@ -1,5 +1,5 @@
-<button id="button1" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_speed">Wind Speed</a></button>
-<button id="button2" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_direction">Wind Direction</a></button>
+<button id="button1" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_speed_with_predictions">Wind Speed</a></button>
+<button id="button2" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_speed_and_direction_with_predictions">Wind Direction</a></button>
 
 <object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
 <script>

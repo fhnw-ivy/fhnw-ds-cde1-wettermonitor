@@ -54,6 +54,11 @@ def convert_station_to_int(station: str):
     return 0 if station == 'mythenquai' else 1
 
 
+def convert_labelled_predictions_to_relative_datetime(labelled_predictions, reference_datetime, value_index=None):
+    return {reference_datetime + datetime.timedelta(minutes=int(key[1:3])): value[value_index] if value_index is not None else value
+            for prediction in labelled_predictions
+            for key, value in prediction.items() if key != 'NOW'}
+
 def predict_all_stations():
     measurements = [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction, wr.Measurement.Air_temp]
 
