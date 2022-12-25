@@ -1,4 +1,3 @@
-import datetime
 import os
 import threading
 import time
@@ -35,6 +34,12 @@ default_station = wr.get_stations()[0]
 default_plot_type = "wind_speed_with_predictions"
 
 
+@app.before_request
+def before_request():
+    if not service_ready:
+        return render_template(loading_template)
+
+
 @app.route('/')
 @app.route('/weatherstation')
 def index():
@@ -43,17 +48,9 @@ def index():
 
 @app.route("/weatherstation/<station>")
 def wetterstation(station: str):
-    if not service_ready:
-        return render_template(loading_template)
-
-    start_time = datetime.datetime.now() - datetime.timedelta(days=1)
-    stop_time = datetime.datetime.now()
-
-    measurements = [wr.Measurement.Humidity, wr.Measurement.Pressure, wr.Measurement.Air_temp]
-
     weather_data = pd.DataFrame()
     try:
-        weather_query = wr.WeatherQuery(station=station, measurements=measurements)
+        weather_query = wr.WeatherQuery(station=station)
         weather_data = wr.run_query(weather_query)
 
         if weather_data is None:
@@ -73,9 +70,6 @@ def plots_index(station: str):
 
 @app.route("/weatherstation/<station>/plots/<plot_type>")
 def plots(station: str, plot_type: str):
-    if not service_ready:
-        return render_template(loading_template)
-
     return render_template('index.html', subpage="plots", station=station, plot_type=plot_type,
                            status=ServiceStatus.get_status(), refresh_interval=default_refresh_interval,
                            station_list=wr.get_stations())
@@ -83,9 +77,6 @@ def plots(station: str, plot_type: str):
 
 @app.route("/weatherstation/<station>/predictions")
 def predictions(station: str):
-    if not service_ready:
-        return render_template(loading_template)
-
     prediction_data = []
     try:
         prediction_data = pred.get_predictions(station)
@@ -95,6 +86,7 @@ def predictions(station: str):
     return render_template('index.html', subpage="prediction", station=station, prediction=prediction_data,
                            station_list=wr.get_stations(), status=ServiceStatus.get_status(),
                            refresh_interval=default_refresh_interval)
+
 
 def job_watcher():
     logger.info("Checking for pending jobs...")
