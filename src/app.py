@@ -29,7 +29,7 @@ logger.info("Starting app")
 app = Flask(__name__)
 service_ready = False
 loading_template = "loading.html"
-default_refresh_interval = 10
+default_refresh_interval = 60
 default_station = wr.get_stations()[0]
 default_plot_type = "wind_speed_with_predictions"
 
@@ -58,7 +58,7 @@ def wetterstation(station: str):
     except Exception as e:
         logger.error(f"Error while loading data: {e}")
 
-    return render_template('index.html', subpage="station", station=station, data=weather_data,
+    return render_template('index.html', subpage="station", station=station, plot_list=wr.get_plots(), data=weather_data,
                            station_list=wr.get_stations(), status=ServiceStatus.get_status(),
                            refresh_interval=default_refresh_interval)
 
@@ -70,7 +70,7 @@ def plots_index(station: str):
 
 @app.route("/weatherstation/<station>/plots/<plot_type>")
 def plots(station: str, plot_type: str):
-    return render_template('index.html', subpage="plots", station=station, plot_type=plot_type,
+    return render_template('index.html', subpage="plots", station=station, plot_list=[plot_type],
                            status=ServiceStatus.get_status(), refresh_interval=default_refresh_interval,
                            station_list=wr.get_stations())
 

@@ -41,6 +41,7 @@ class Config:
     db_port = 8086
     db_name = 'meteorology'
     stations = ['mythenquai', 'tiefenbrunnen']
+    plots = ['wind_speed', 'wind_direction']
     stations_force_query_last_entry = False
     stations_last_entries = {}
     keys_mapping = {

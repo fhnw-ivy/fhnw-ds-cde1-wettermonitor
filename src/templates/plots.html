@@ -1,25 +1,172 @@
-<button id="button1" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_speed_with_predictions">Wind Speed</a></button>
-<button id="button2" class="button is-primary is-fullwidth is-medium is-large"><a href="/weatherstation/{{station}}/plots/wind_speed_and_direction_with_predictions">Wind Direction</a></button>
+<div class="plot-container">
+    {%for plot_type in plot_list%}
+        <div class="option plot">
+            <object id='{{plot_type}}' data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
+        </div>
+    {%endfor%}
+    {% include 'prediction.html' %}
+  <div class="left-arrow"></div>
+  <div class="right-arrow"></div>
+</div>
 
-<object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
+<style>
+
+    .plot-container {
+        max-height: 100vh;
+        max-width: 100vw;
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+    }
+
+    .plot {
+        min-width: 100%;
+        font-size: 4rem;
+        display: flex;
+        justify-content: center;
+        scroll-snap-align: start;
+    }
+
+
+
+    /* Arrows */
+    .right-arrow,
+    .left-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 64px;
+        height: 64px;
+        /*   background-color: black; */
+        z-index: 2;
+        cursor: pointer;
+    }
+
+    .right-arrow {
+        right: 1rem;
+    }
+    .left-arrow {
+        left: 1rem;
+    }
+
+    .right-arrow::before,
+    .right-arrow::after,
+    .left-arrow::before,
+    .left-arrow::after {
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px,
+        rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
+        rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+        content: "";
+        position: absolute;
+        width: 64px;
+        height: 16px;
+        background-color: white;
+    }
+
+    .right-arrow::before {
+        transform: rotate(45deg);
+    }
+
+    .right-arrow::after {
+        transform: rotate(-45deg);
+        bottom: 14px;
+    }
+
+    .left-arrow::before {
+        transform: rotate(-45deg);
+    }
+
+    .left-arrow::after {
+        transform: rotate(45deg);
+        bottom: 14px;
+    }
+
+    /* Hide the scrollbar */
+    .plot-container::-webkit-scrollbar {
+        display: none; /* Safari, Google Chrome, Opera,  */
+    }
+
+    /* Adaptive */
+    @media screen and (max-width: 720px) {
+        .right-arrow::before,
+        .right-arrow::after,
+        .left-arrow::before,
+        .left-arrow::after {
+            width: 32px;
+            height: 12px;
+        }
+        .right-arrow::after,
+        .left-arrow::after {
+            bottom: 16px;
+        }
+        .right-arrow::before,
+        .left-arrow::before {
+            top: 20px;
+        }
+        .right-arrow::before,
+        .right-arrow::after {
+            right: 0;
+        }
+    }
+</style>
+
 <script>
-    // Get a reference to the buttons
-    var button1 = document.getElementById('button1');
-    var button2 = document.getElementById('button2');
+    "use strict";
+    const leftArrow = document.querySelector(".left-arrow"),
+        rightArrow = document.querySelector(".right-arrow"),
+        slider = document.querySelector(".slider");
 
-    // Create a new Hammer instance to detect swipe gestures
-    var hammer = new Hammer(document);
+    /**
+     * @brief Scroll to the right
+     */
+    function scrollRight() {
+        if (slider.scrollWidth - slider.clientWidth === slider.scrollLeft) {
+            slider.scrollTo({
+                left: 0,
+                behavior: "smooth"
+            });
+        } else {
+            slider.scrollBy({
+                left: window.innerWidth,
+                behavior: "smooth"
+            });
+        }
+    }
 
-    // Listen for swipe gestures
-    hammer.on('swipe', function(event) {
-        // Check the direction of the swipe
-        if (event.direction == 'left') {
-            // Swipe left, so trigger a click event on button1
-            button1.click();
-        } else if (event.direction == 'right') {
-            // Swipe right, so trigger a click event on button2
-            button2.click();
+    /**
+     * @brief Scroll to the left
+     */
+    function scrollLeft() {
+        slider.scrollBy({
+            left: -window.innerWidth,
+            behavior: "smooth"
+        });
+    }
+
+    // Auto slider
+    let timerId = setInterval(scrollRight, 7000);
+
+    /**
+     * @brief Reset timer for scrolling right
+     */
+    function resetTimer() {
+        clearInterval(timerId);
+        timerId = setInterval(scrollRight, 7000);
+    }
+
+    // Scroll Events
+    slider.addEventListener("click", function (ev) {
+        if (ev.target === leftArrow) {
+            scrollLeft();
+            resetTimer();
+        }
+    });
+
+    slider.addEventListener("click", function (ev) {
+        if (ev.target === rightArrow) {
+            scrollRight();
+            resetTimer();
         }
     });
 </script>
-
