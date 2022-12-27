@@ -4,7 +4,7 @@
 <div id="navigation-bar" class="navigation-bar">
     <!-- add buttons for each station -->
     {%for station in station_list%}
-        <button class="navigation-button" onclick="setStation('{{station}}')">{{station}}</button>
+        <button class="navigation-button title" onclick="setStation('{{station}}')">{{station}}</button>
     {%endfor%}
 </div>
 <style>
@@ -29,7 +29,7 @@
     .navigation-button {
         /* add some styling for the navigation buttons */
         font: 5em/1 'Open Sans', helvetica, sans-serif;
-        font-size: 64px;
+        font-size: 58px;
         -webkit-font-smoothing: antialiased;
         background-color: white;
         min-height: 40%;
