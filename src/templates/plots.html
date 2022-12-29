@@ -1,13 +1,12 @@
 <div class="plot-container slider">
     {%for plot_type in plot_list%}
         <div class="option plot">
-            <object id='{{plot_type}}' data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
+            <object id='{{plot_type}}' data={{ url_for('static', filename='plots/{station}/{plot_type}.png'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
         </div>
     {%endfor%}
     {% include 'prediction.html' %}
-  <div class="left-arrow"></div>
-  <div class="right-arrow"></div>
 </div>
+
 
 <style>
 
@@ -113,9 +112,7 @@
 
 <script>
     "use strict";
-    const leftArrow = document.querySelector(".left-arrow"),
-        rightArrow = document.querySelector(".right-arrow"),
-        slider = document.querySelector(".slider");
+    const slider = document.querySelector(".slider");
 
     /**
      * @brief Scroll to the right
@@ -155,18 +152,4 @@
         timerId = setInterval(scrollRight, 30000);
     }
 
-    // Scroll Events
-    slider.addEventListener("click", function (ev) {
-        if (ev.target === leftArrow) {
-            scrollLeft();
-            resetTimer();
-        }
-    });
-
-    slider.addEventListener("click", function (ev) {
-        if (ev.target === rightArrow) {
-            scrollRight();
-            resetTimer();
-        }
-    });
 </script>

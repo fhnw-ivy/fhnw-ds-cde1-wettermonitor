@@ -72,8 +72,8 @@ def save_plot(plot, plot_name, station):
     plot_file_name = f"{station}/{plot_name}"
 
     try:
-        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".svg"), height=460)
-        logger.debug(f"Saved plot {plot_name} for station {station} as svg file.")
+        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".png"), height=460)
+        logger.debug(f"Saved plot {plot_name} for station {station} as png file.")
     except Exception as e:
         logger.error(f"Saving plot {plot_name} failed.")
         logger.error(e)

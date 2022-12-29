@@ -1,6 +1,20 @@
 <h1 id="station-title" class="title">{{station}}</h1>
 <h2 last_updated class="subtitle">Last updated: {{status[1]}}</h2>
-{% include 'plots.html' %}
+<div class="columns">
+    <div class="column">
+        <div class="card">
+            {% include 'plots.html' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="card side-card" id="top-card">
+            {% include 'prediction.html' %}
+        </div>
+        <div class="card side-card" id="bottom-card">
+            {% include 'prediction.html' %}
+        </div>
+    </div>
+</div>
 
 <div id="navigation-bar" class="navigation-bar">
     <!-- add buttons for each station -->
@@ -40,6 +54,23 @@
         cursor: pointer;
         outline: none;
         margin: 8px;
+    }
+    .side-card {
+        height: 50%;
+    }
+
+    #top-card {
+        align-items: flex-start;
+    }
+
+    #bottom-card {
+        align-items: flex-end;
+        margin-top: 1.5em;
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
     }
 </style>
 <script>

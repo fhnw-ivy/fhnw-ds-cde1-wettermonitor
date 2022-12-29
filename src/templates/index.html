@@ -20,7 +20,9 @@
         }
         .box-container {
             height: 100%;
-            margin: 3em;
+            margin-top: 3em;
+            margin-left: 2em;
+            margin-right: 2em;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
@@ -47,11 +49,11 @@
             </div>
         </nav>
     </header>
+    <div class="box-container">{% include 'station.html' %}</div>
 
-    <div class="box-container">
-        {% include subpage+'.html' %}
-    </div>
+
 </div>
+
 
 <script>
     if (navigator.onLine && '{{status[0]}}' === 'True') {
