@@ -1,6 +1,7 @@
-<h1 id="title" class="title">{{station}}</h1>
+<h1 id="station-title" class="title">{{station}}</h1>
 <h2 last_updated class="subtitle">Last updated: {{status[1]}}</h2>
 {% include 'plots.html' %}
+
 <div id="navigation-bar" class="navigation-bar">
     <!-- add buttons for each station -->
     {%for station in station_list%}
@@ -43,7 +44,7 @@
 </style>
 <script>
     // add a click event listener to the title element
-    document.getElementById('title').addEventListener('click', function() {
+    document.getElementById('station-title').addEventListener('click', function() {
         // show the navigation bar
         document.getElementById('navigation-bar').classList.add('active');
     });
@@ -51,7 +52,7 @@
     // add a function to set the current station
     function setStation(station) {
         // update the station name in the title element
-        document.getElementById('title').textContent = station;
+        document.getElementById('station-title').textContent = station;
 
         // hide the navigation bar
         document.getElementById('navigation-bar').classList.remove('active');
@@ -59,3 +60,4 @@
         window.location.href = 'http://localhost:6540/weatherstation/' + station;
     }
 </script>
+

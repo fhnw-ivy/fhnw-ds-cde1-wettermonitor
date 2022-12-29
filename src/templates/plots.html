@@ -1,4 +1,4 @@
-<div class="plot-container">
+<div class="plot-container slider">
     {%for plot_type in plot_list%}
         <div class="option plot">
             <object id='{{plot_type}}' data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
@@ -145,14 +145,14 @@
     }
 
     // Auto slider
-    let timerId = setInterval(scrollRight, 7000);
+    let timerId = setInterval(scrollRight, 30000);
 
     /**
      * @brief Reset timer for scrolling right
      */
     function resetTimer() {
         clearInterval(timerId);
-        timerId = setInterval(scrollRight, 7000);
+        timerId = setInterval(scrollRight, 30000);
     }
 
     // Scroll Events

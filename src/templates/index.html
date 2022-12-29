@@ -18,19 +18,23 @@
             height: 100%;
             max-width: 100% !important;
         }
-        .box {
+        .box-container {
             height: 100%;
-            margin: 2em;
+            margin: 3em;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
 </head>
 
 <body>
 <div class="container">
     <header>
         <nav class="navbar is-dark is-fixed-top">
+            <div class="navbar-item">
+                <button class="button is-primary" onclick="initIntro()">Start Intro</button>
+            </div>
             <div class="navbar-end">
               <span class="navbar-item">
                 <span class="tag is-info is-medium" id="status">
@@ -43,7 +47,8 @@
             </div>
         </nav>
     </header>
-    <div class="box">
+
+    <div class="box-container">
         {% include subpage+'.html' %}
     </div>
 </div>
@@ -127,7 +132,24 @@
     }
 
 
+</script>
 
+<script>
+    function initIntro() {
+        // define the steps for the walkthrough
+        var intro = introJs();
+        intro.setOptions({
+            steps: [
+                {intro: "Welcome to Weather.AI! This is a demo of the world best weather station dashboard. Click next to continue."},
+                {
+                    element: '#station-title',
+                    intro: 'To switch between stations, tap on the station name.'
+                }
+            ]
+        });
 
+        // start the walkthrough
+        intro.start();
+    }
 </script>
 </body>
