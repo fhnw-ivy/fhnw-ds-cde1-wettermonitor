@@ -1,7 +1,8 @@
 # fhnw-ds-cde1-wettermonitor
 Data engineering challenge weather monitor for water sports enthusiasts. 
 
-TODO: Screenshot of the dashboard
+![Dashboard](images/dashboard.png)
+
 ---
 
 ## Hardware
@@ -43,8 +44,8 @@ Following software / hardware is required to set up or run the weather monitor:
     ```
 8. Use the convenience script `install.sh` to install the required dependencies:
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/fhnw-ivy/fhnw-ds-cde1-wettermonitor/main/setup.sh -o get-weather-monitor.sh
-    sudo sh ./get-weather-monitor.sh
+    curl -fsSL https://raw.githubusercontent.com/fhnw-ivy/fhnw-ds-cde1-wettermonitor/main/install.sh -o install-weather-monitor.sh
+    sudo sh ./install-weather-monitor.sh
     ```
 
 After the script has finished, the Raspberry Pi will reboot automatically. On the next boot, the weather monitor will start automatically.
@@ -58,16 +59,26 @@ The installation script will install the following services and applications:
 
 
 ## Usage
-The startup of the weather monitor takes several minutes. A loading screen is displayed during this time.
+The startup of the weather monitor can take several minutes. A loading screen is displayed during this time.
 ![Loading Screen](images/loading_screen.gif)
 
 After the startup, the dashboard is displayed in the browser. The dashboard shows the current weather data for a specific weather station. The weather station can be selected in the top left corner of the dashboard.
 
-TODO: Describe how to use the weather monitor with screenshots and descriptions.
+### Dashboard
+The dashboard shows the current weather data for a specific weather station. The weather station can be selected in the top left corner of the dashboard.
+![Dashboard](images/dashboard.png)
+
+### Plots
+
+
+### Predictions
+
 
 ## Troubleshooting
 TODO: Describe common problems and solutions.
 
 ## Resources
+
+The data for the weather monitor is provided by the following service of the City of Zurich:
 - https://tecdottir.herokuapp.com/docs/
 - https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen

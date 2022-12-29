@@ -60,7 +60,7 @@ The project is structured as follows:
 ├── download_model.sh # Script to download the model in order to make predictions
 ├── example.env # Example configuration file
 ├── images # Images used in the README
-│   └── img.png
+│   └── dashboard.png
 ├── install.sh # Script to install the weather monitor
 ├── prediction # Prediction related files (notebooks, CSVs used to train the model)
 │   ├── input
@@ -95,6 +95,18 @@ The project is structured as follows:
 
 # Run in development mode
 
+> **Note**: The scripts used are based on a Linux environment. They may not work on other operating systems. On Windows the scripts can be run using [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
+First the current model has to be downloaded using the script `download_model.sh`:
+```bash
+./download_model.sh
+```
+After that the model file has to be moved to the `src` folder:
+
+```bash
+mv weather_model.pkl weather_model.pkl
+```
+
 The weather monitor can be run in development mode using the `docker-compose-dev.yml` file. This file is configured to use the `Dockerfile` file in the root of the project. This means that the Docker image will be built locally instead of pulling the image from the GitHub Container Registry.
 
 The following command can be used to run the weather monitor in development mode:
@@ -105,6 +117,7 @@ docker-compose -f docker-compose-dev.yml up -d --build --force-recreate --remove
 Alternatively only the InfluxDB container can be started and the weather monitor can be started with Python using the following command:
 ```bash
 docker-compose -f docker-compose-dev.yml up -d influxdb
+pip install -r requirements.txt
 python3 src/app.py
 ```
 
@@ -113,6 +126,9 @@ The following command can be used to shut down the weather monitor in developmen
 ```bash
 docker-compose -f docker-compose-dev.yml down
 ```
+
+# Known issues
+- Running the application outside Docker on a Windows machine is not supported. The application can be run using WSL on Windows.
 
 # Future roadmap
 - [ ] Add more stations

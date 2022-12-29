@@ -12,5 +12,4 @@ docker compose up -d
 # Configure autostart
 cp -fr autostart /etc/xdg/lxsession/LXDE-pi/autostart
 
-# Reboot
-shutdown -r +2 "Server is going to reboot in two minutes"
+sudo shutdown -r
