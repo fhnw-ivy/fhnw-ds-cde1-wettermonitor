@@ -59,8 +59,7 @@ The installation script will install the following services and applications:
 
 ## Usage
 The startup of the weather monitor takes several minutes. A loading screen is displayed during this time.
-
-TODO: Screenshot of the loading screen
+![Loading Screen](images/loading_screen.gif)
 
 After the startup, the dashboard is displayed in the browser. The dashboard shows the current weather data for a specific weather station. The weather station can be selected in the top left corner of the dashboard.
 
