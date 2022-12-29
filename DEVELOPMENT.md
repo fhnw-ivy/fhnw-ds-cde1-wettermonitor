@@ -42,3 +42,80 @@ The application pulls the latest version of the Docker image from the GitHub Con
 This is done through the [Watchtower](https://containrrr.dev/watchtower/) Docker container. The Watchtower container will automatically update the Docker container running the weather monitor application as well as the InfluxDB container.
 
 # Project structure
+
+The project is structured as follows:
+
+```bash
+.
+├── api-analyser # API analyser to analyze intervals in which data is provided by the API
+│   ├── analyse_api.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── run_analyzer.sh
+├── autostart # Autostart script for the weather monitor
+├── DEVELOPMENT.md
+├── docker-compose-dev.yml # Docker compose file for development
+├── docker-compose.yml # Docker compose file for the weather monitor
+├── Dockerfile # Dockerfile for the weather monitor
+├── download_model.sh # Script to download the model in order to make predictions
+├── example.env # Example configuration file
+├── images # Images used in the README
+│   └── img.png
+├── install.sh # Script to install the weather monitor
+├── prediction # Prediction related files (notebooks, CSVs used to train the model)
+│   ├── input
+│   │   ├── input.csv
+│   │   ├── messwerte_mythenquai_2007-2021.csv
+│   │   └── messwerte_tiefenbrunnen_2007-2021.csv
+│   └── weather_prediction.ipynb
+├── README.md
+├── requirements.txt # Requirements for the weather monitor
+└── src 
+    ├── app.py # Main application file
+    ├── csv # CSV files to import on startup
+    │   ├── messwerte_mythenquai_2022.csv
+    │   └── messwerte_tiefenbrunnen.csv
+    ├── plotting.py # Plotting related functions
+    ├── prediction.py # Prediction related functions
+    ├── service_status.py # Service status related functions
+    ├── static # Static files (CSS, JS, images)
+    │   ├── css
+    │   │   └── style.css
+    │   └── images
+    │       └── direction.png
+    ├── templates # HTML templates
+    │   ├── index.html
+    │   ├── loading.html
+    │   ├── plots.html
+    │   ├── prediction.html
+    │   └── station.html
+    ├── weather_data.py # Database and API communication related functions
+    └── weather_repository.py # Management of data and query related functions
+```
+
+# Run in development mode
+
+The weather monitor can be run in development mode using the `docker-compose-dev.yml` file. This file is configured to use the `Dockerfile` file in the root of the project. This means that the Docker image will be built locally instead of pulling the image from the GitHub Container Registry.
+
+The following command can be used to run the weather monitor in development mode:
+```bash
+docker-compose -f docker-compose-dev.yml up -d --build --force-recreate --remove-orphans
+```
+
+Alternatively only the InfluxDB container can be started and the weather monitor can be started with Python using the following command:
+```bash
+docker-compose -f docker-compose-dev.yml up -d influxdb
+python3 src/app.py
+```
+
+## Shutdown
+The following command can be used to shut down the weather monitor in development mode:
+```bash
+docker-compose -f docker-compose-dev.yml down
+```
+
+# Future roadmap
+- [ ] Add more stations
+- [ ] Add more plots
+- [ ] Artificial intelligence to predict the weather
+- [ ] Add more data sources
