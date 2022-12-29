@@ -5,6 +5,7 @@ import os
 import time
 from builtins import str
 
+import requests
 from pandas import DataFrame
 
 import weather_data as wd
@@ -71,6 +72,28 @@ class WeatherQuery:
 config = wd.Config()
 
 
+def download_latest_csv_files(station: str):
+    """
+    Downloads the latest CSV files from the weather station.
+    Args:
+        station: The station to download the CSV files for.
+
+    Returns: None
+    """
+    file_name = f"./csv/messwerte_{station}.csv"
+    if not os.path.exists(file_name) or os.path.getmtime(file_name) < time.time() - 604800:
+        logger.info(f"Downloading latest CSV file for station {station}..")
+        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+
+        url = f"https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen/download/messwerte_{station}_{datetime.datetime.now().year}.csv"
+        r = requests.get(url, allow_redirects=True)
+        open(file_name, 'wb').write(r.content)
+
+        logger.info("Download latest CSV files finished for " + station)
+    else:
+        logger.info(f"CSV file for station {station} is up to date.")
+
+
 def init() -> None:
     config.db_host = os.environ.get("INFLUXDB_HOST") if os.environ.get("INFLUXDB_HOST") else "localhost"
     config.debug = int(os.environ.get("INFLUXDB_PORT")) if os.environ.get("INFLUXDB_PORT") else 8086
@@ -79,15 +102,27 @@ def init() -> None:
     wd.connect_db(config)
     logger.debug("DB connected")
 
+    logger.debug("Starting CSV import..")
+
     for station in config.stations:
-        wd.import_csv_file(config=config, file_name=f"./csv/messwerte_{station}_2022.csv",
+        logger.info("Checking for latest CSV files started for " + station)
+        try:
+            download_latest_csv_files(station)
+        except Exception as e:
+            logger.error("Download latest CSV files failed for " + station)
+            logger.error(e)
+
+            # Use fallback data
+            logger.info("Using fallback data..")
+
+        wd.import_csv_file(config=config, file_name=f"./csv/messwerte_{station}.csv",
                            station=station)
         logger.debug(f"CSV '{station}' imported.")
 
     logger.debug("CSV import finished.")
 
     logger.debug("Starting periodic read..")
-    # Ensure that data is available before starting the service is ready
+    # Ensure that the latest data is available before starting the service is ready
     wd.import_latest_data(config=config, periodic_read=False)
     logger.debug("Periodic read finished.")
 
@@ -127,6 +162,7 @@ def get_stations():
 
 def get_plots():
     return config.plots
+
 
 def health_check():
     try:

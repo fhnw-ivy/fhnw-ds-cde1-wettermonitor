@@ -196,3 +196,5 @@ src/static/plots
 
 .idea
 api-analyser/timestamps.json
+
+src/csv/
