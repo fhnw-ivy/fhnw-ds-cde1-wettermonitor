@@ -1,8 +1,8 @@
 <h1 id="station-title" class="title">{{station}}</h1>
-<h2 last_updated class="subtitle">Last updated: {{status[1]}}</h2>
-<div class="columns">
-    <div class="column">
-        <div class="card">
+<h2 last_updated class="subtitle" id="updated-subtitle">Last updated: {{status[1]}}</h2>
+<div id="dashboard" class="columns">
+    <div class="column is-two-thirds">
+        <div class="card" id="left-card">
             {% include 'plots.html' %}
         </div>
     </div>
@@ -19,7 +19,7 @@
 <div id="navigation-bar" class="navigation-bar">
     <!-- add buttons for each station -->
     {%for station in station_list%}
-        <button class="navigation-button title" onclick="setStation('{{station}}')">{{station}}</button>
+        <button class="navigation-button title" id="{{station}}" onclick="setStation('{{station}}')">{{station}}</button>
     {%endfor%}
 </div>
 <style>
