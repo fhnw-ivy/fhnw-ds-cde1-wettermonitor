@@ -1,46 +1,3 @@
-# Logs
-Logs can be viewed through the Docker container logs. The following command can be used to view the logs of the weather monitor container:
-```bash
-sudo docker logs -f fhnw-ds-cde1-wettermonitor-weather-monitor-1
-```
-
-You may have to replace `fhnw-ds-cde1-wettermonitor-weather-monitor-1` with the name of the container. The name of the container can be found using the following command:
-```bash
-sudo docker ps
-```
-
-The matching container name will be listed in the `NAMES` column of the container running under the `ghcr.io/fhnw-ivy/fhnw-ds-cde1-wettermonitor:main` image.
-
-# Accessing the application
-The dashboard can be accessed through the following URL: http://localhost:6540
-
-# Configuration
-The configuration of the weather monitor can be done through the `example.env` file. The following options are available:
-
-| Option               | Description                            | Default |
-|----------------------|----------------------------------------| --- |
-| `INFLUXDB_HOST`      | Hostname of the InfluxDB instance      | `influxdb` |
-| `INFLUXDB_PORT`      | Port of the InfluxDB instance          | `8086` |
-| `INFLUXDB_PASSWORD`  | Password used on the InfluxDB instance | `mysecretpassword` |
-
-The example configuration can be copied to a `.env` file using the following command:
-```bash
-cp example.env .env
-```
-
-This is necessary because the `docker-compose.yml` file is configured to use the `.env` file as configuration file.
-
-After that the docker stack has to redeployed (if already running or not) using the following command:
-```bash
-sudo docker-compose up -d
-```
-
-# Updating the application
-
-The application pulls the latest version of the Docker image from the GitHub Container Registry on every boot. This means that the application will automatically update to the latest version regularly.
-
-This is done through the [Watchtower](https://containrrr.dev/watchtower/) Docker container. The Watchtower container will automatically update the Docker container running the weather monitor application as well as the InfluxDB container.
-
 # Project structure
 
 The project is structured as follows:
@@ -93,8 +50,28 @@ The project is structured as follows:
     └── weather_repository.py # Management of data and query related functions
 ```
 
-# Run in development mode
+# Tech stack
+The weather monitor is built with the following technologies:
+- [Docker](https://www.docker.com/) used to containerize the application
+- [Docker Compose](https://docs.docker.com/compose/) used to orchestrate the application
+- [Python](https://www.python.org/) as programming language
+    - Used version: 3.10
+- [Flask](https://flask.palletsprojects.com/en/2.0.x/) as web framework
+- [Plotly](https://plotly.com/python/) as plotting library
+- [sci-kit learn](https://scikit-learn.org/stable/) used to make predictions with the help of [K-nearest neighbors algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsRegressor.html)
+- [schedule](https://schedule.readthedocs.io/en/stable/) used to schedule the generation of predictions, plots and health checks
+- [InfluxDB](https://www.influxdata.com/) used as database. Official python client is used to communicate with the database.
+- [Bash scripts](https://www.gnu.org/software/bash/) used to automate the download of files on build time and the installation of the weather monitor
+- [Intro.js](https://introjs.com/) used to provide a guided tour of the weather monitor
+- [Bulma](https://bulma.io/) used as CSS framework
+- [Pickle](https://docs.python.org/3/library/pickle.html) used to serialize and deserialize the prediction model
 
+All python dependencies are also listed in the `requirements.txt` file.
+
+# Docker environment
+The weather monitor is built with Docker. The `Dockerfile` is used to build the image and the `docker-compose.yml` file is used to run the image. The `docker-compose-dev.yml` file is used to run the image in development mode.
+
+# Run in development mode
 > **Note**: The scripts used are based on a Linux environment. They may not work on other operating systems. On Windows the scripts can be run using [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 First the current model has to be downloaded using the script `download_model.sh`:
@@ -104,7 +81,7 @@ First the current model has to be downloaded using the script `download_model.sh
 After that the model file has to be moved to the `src` folder:
 
 ```bash
-mv weather_model.pkl weather_model.pkl
+mv weather_model.pkl ./src/weather_model.pkl
 ```
 
 The weather monitor can be run in development mode using the `docker-compose-dev.yml` file. This file is configured to use the `Dockerfile` file in the root of the project. This means that the Docker image will be built locally instead of pulling the image from the GitHub Container Registry.
@@ -120,6 +97,49 @@ docker-compose -f docker-compose-dev.yml up -d influxdb
 pip install -r requirements.txt
 python3 src/app.py
 ```
+
+# Logs
+Logs can be viewed through the Docker container logs. The following command can be used to view the logs of the weather monitor container:
+```bash
+sudo docker logs -f fhnw-ds-cde1-wettermonitor-weather-monitor-1
+```
+
+You may have to replace `fhnw-ds-cde1-wettermonitor-weather-monitor-1` with the name of the container. The name of the container can be found using the following command:
+```bash
+sudo docker ps
+```
+
+The matching container name will be listed in the `NAMES` column of the container running under the `ghcr.io/fhnw-ivy/fhnw-ds-cde1-wettermonitor:main` image.
+
+# Accessing the application
+The dashboard can be accessed through the following URL: http://localhost:6540
+
+# Configuration
+The configuration of the weather monitor can be done through the `example.env` file. The following options are available:
+
+| Option               | Description                            | Default |
+|----------------------|----------------------------------------| --- |
+| `INFLUXDB_HOST`      | Hostname of the InfluxDB instance      | `influxdb` |
+| `INFLUXDB_PORT`      | Port of the InfluxDB instance          | `8086` |
+| `INFLUXDB_PASSWORD`  | Password used on the InfluxDB instance | `mysecretpassword` |
+
+The example configuration can be copied to a `.env` file using the following command:
+```bash
+cp example.env .env
+```
+
+This is necessary because the `docker-compose.yml` file is configured to use the `.env` file as configuration file.
+
+After that the docker stack has to redeployed (if already running or not) using the following command:
+```bash
+sudo docker-compose up -d
+```
+
+# Updating the application
+
+The application pulls the latest version of the Docker image from the GitHub Container Registry on every boot. This means that the application will automatically update to the latest version regularly.
+
+This is done through the [Watchtower](https://containrrr.dev/watchtower/) Docker container. The Watchtower container will automatically update the Docker container running the weather monitor application as well as the InfluxDB container.
 
 ## Shutdown
 The following command can be used to shut down the weather monitor in development mode:
