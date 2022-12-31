@@ -66,12 +66,12 @@ The weather monitor is built with the following technologies:
 - [Bulma](https://bulma.io/) used as CSS framework
 - [Pickle](https://docs.python.org/3/library/pickle.html) used to serialize and deserialize the prediction model
 
-All python dependencies are also listed in the `requirements.txt` file.
+All python dependencies are also listed in the `requirements.txt` file with their respective version.
 
-# Docker environment
+# Environment
 The weather monitor is built with Docker. The `Dockerfile` is used to build the image and the `docker-compose.yml` file is used to run the image. The `docker-compose-dev.yml` file is used to run the image in development mode.
 
-# Run in development mode
+## Run in development mode (Docker)
 > **Note**: The scripts used are based on a Linux environment. They may not work on other operating systems. On Windows the scripts can be run using [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 First the current model has to be downloaded using the script `download_model.sh`:
@@ -91,12 +91,22 @@ The following command can be used to run the weather monitor in development mode
 docker-compose -f docker-compose-dev.yml up -d --build --force-recreate --remove-orphans
 ```
 
-Alternatively only the InfluxDB container can be started and the weather monitor can be started with Python using the following command:
+## Run in development mode (Python)
+Follow the steps from above apart from the last one. Instead of running the weather monitor in Docker, it can be run in Python. The following command can be used to run the weather monitor in development mode:
+
+A minimum version of [Python 3.10](https://www.python.org/downloads/) is required to run the weather monitor.
+
+> **Note**: The `requirements.txt` file has to be installed first. This can be done using the following command:
+> ```bash
+> pip install -r requirements.txt
+> ```
+> 
 ```bash
 docker-compose -f docker-compose-dev.yml up -d influxdb
-pip install -r requirements.txt
 python3 src/app.py
 ```
+
+This way we will only run the InfluxDB database in Docker and the rest of the application will be run in Python. This is useful if you want to make changes to the application and see the changes without rebuilding the Docker image every time.
 
 # Logs
 Logs can be viewed through the Docker container logs. The following command can be used to view the logs of the weather monitor container:
@@ -111,8 +121,12 @@ sudo docker ps
 
 The matching container name will be listed in the `NAMES` column of the container running under the `ghcr.io/fhnw-ivy/fhnw-ds-cde1-wettermonitor:main` image.
 
+If you're running the weather monitor in development mode and with Python, the logs can be viewed in the execution terminal.
+
 # Accessing the application
-The dashboard can be accessed through the following URL: http://localhost:6540
+The dashboard can be locally accessed through the following URL: http://localhost:6540
+
+Make sure that the port `6540` is not used by another application or instance running in order to avoid conflicts.
 
 # Configuration
 The configuration of the weather monitor can be done through the `example.env` file. The following options are available:
@@ -123,12 +137,15 @@ The configuration of the weather monitor can be done through the `example.env` f
 | `INFLUXDB_PORT`      | Port of the InfluxDB instance          | `8086` |
 | `INFLUXDB_PASSWORD`  | Password used on the InfluxDB instance | `mysecretpassword` |
 
-The example configuration can be copied to a `.env` file using the following command:
+The example configuration must be copied to a `.env` file in order to utilize it. The `.env` file is ignored by Git and will not be committed to the repository. This is done to prevent the accidental commit of sensitive information. The `.env` file is also ignored by Docker Compose. This is done to prevent the accidental commit of sensitive information to the Docker image.
+
+You can copy and edit the example configuration using the following command (Linux):
 ```bash
 cp example.env .env
+nano .env
 ```
 
-This is necessary because the `docker-compose.yml` file is configured to use the `.env` file as configuration file.
+> **Note**: This is necessary because the `docker-compose.yml` file is configured to use the `.env` file as configuration file.
 
 After that the docker stack has to redeployed (if already running or not) using the following command:
 ```bash
@@ -136,19 +153,34 @@ sudo docker-compose up -d
 ```
 
 # Updating the application
-
 The application pulls the latest version of the Docker image from the GitHub Container Registry on every boot. This means that the application will automatically update to the latest version regularly.
 
 This is done through the [Watchtower](https://containrrr.dev/watchtower/) Docker container. The Watchtower container will automatically update the Docker container running the weather monitor application as well as the InfluxDB container.
 
-## Shutdown
-The following command can be used to shut down the weather monitor in development mode:
+# How can I add a new weather station?
+The weather monitor can be extended to support new weather stations. The following steps have to be done to add a new weather station:
+
+1. Add the new weather station identifier (e.g. 'mythenquai') to the `stations` list within the `Config` class in the `src/weather_data.py` file.
+2. Extend or create a new module with `src/weather_data.py` as a role model to fetch data from the data source that provides the weather data for the new weather station.
+   1. Be sure to follow the structure of the InfluxDB when adding new data points. The structure of the InfluxDB can be found in the `src/weather_data.py` file.
+3. Schedule the fetching of the new weather station data in the `src/app.py` file. The fetching of the data can be scheduled using the `schedule.every().hour.do(fetch_weather_data)` function. The `fetch_weather_data` is a placeholder for a function that can be found in the new or extended module created for that station.
+
+If the data from the new data source and station is successfully fetched and stored in the InfluxDB, the weather monitor will automatically generate a new prediction and plot for the new weather station. The new weather station will also be available in the dashboard.
+
+> **Note**: The weather monitor will only generate a new prediction and plot if the data for the new weather station is available in the InfluxDB. This means that the weather monitor will not generate a new prediction and plot for the new weather station if the data with the needed variables for the respective operation and new weather station is not available in the InfluxDB.
+
+# Shutdown
+The following command can be used to shut down the weather monitor in development mode (Docker):
 ```bash
 docker-compose -f docker-compose-dev.yml down
 ```
 
+If you're running the weather monitor in development mode and with Python, the weather monitor can be shut down by pressing `CTRL+C` in the execution terminal.
+
 # Known issues
 - Running the application outside Docker on a Windows machine is not supported. The application can be run using WSL on Windows.
+  - This issue is related to the saving of plots on a Windows file system. The application will not be able to save the plots on a Windows file system. See function `save_plot` in `src/plotting.py`.
+- 
 
 # Future roadmap
 - [ ] Add more stations
