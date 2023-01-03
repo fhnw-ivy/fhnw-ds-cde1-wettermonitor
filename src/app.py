@@ -34,6 +34,7 @@ loading_template = "loading.html"
 default_refresh_interval = 60
 default_station = wr.get_stations()[0]
 default_plot_type = "wind_speed_with_predictions"
+show_current = ['air_temperature', 'water_temperature', 'barometric_pressure_qfe', 'humidity', 'windchill']
 
 
 def convert_to_datetime_string(dt):
@@ -83,9 +84,17 @@ def wetterstation(station: str):
     if service_status[1] is not None:
         service_status[1] = convert_to_datetime_string(service_status[1])
 
+    current_data = {}
+    for variable in show_current:
+        current_data[variable] = {
+                                    "name": variable.replace("_", " ").title(),
+                                    "value": weather_data[variable].iloc[-1],
+                                    "unit": wr.get_unit(variable)
+                                 }
+
     return render_template(index_template, subpage="station", station=station, plot_list=plt.get_plots(), data=weather_data,
                            prediction=prediction_data, station_list=wr.get_stations(), status=service_status,
-                           refresh_interval=default_refresh_interval)
+                           refresh_interval=default_refresh_interval, current_list=current_data)
 
 def job_watcher():
     logger.info("Checking for pending jobs...")

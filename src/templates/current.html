@@ -1,0 +1,24 @@
+<div style="margin: 10px" class="option">
+    <h3 class="title is-4">Current Metrics</h3>
+    <div style="margin-bottom: 5px; font-size: medium" class="option__item">
+    {% for name, data_point in current_list.items() %}
+
+            <div style="padding-bottom: 0px; margin-bottom: 0px" class="row">
+                <div class="column">
+                    <span class="is-size-5 label option__item__title">{{ data_point["name"] }}</span>
+                </div>
+                <div class="column">
+                    <span class="tag is-light is-size-5 option__item__description">{{ data_point["value"] }} {{ data_point["unit"] }}</span>
+                </div>
+            </div>
+
+    {% endfor %}
+    </div>
+</div>
+
+<style>
+    .row {
+        display: flex;
+        flex-direction: row;
+    }
+</style>

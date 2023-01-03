@@ -1,17 +1,21 @@
 <div id="dashboard" class="rows" style="">
     <div class="row">
-        <div class="column">
-            <div class="card" id="left-card">
-                {% include 'plots.html' %}
+        <div style="height:10vm" class="columns">
+            <div class="column is-two-thirds">
+                <div style="height:100%" class="card">
+                    {% include 'plots.html' %}
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <div style="height:100%" class="card">
+                    {% include 'current.html' %}
+                </div>
             </div>
         </div>
     </div>
 
      <div class="row">
         <div class="column">
-            <div class="card side-card" id="top-card">
-                {% include 'current.html' %}
-            </div>
             <div class="card side-card" id="bottom-card">
                 {% include 'prediction.html' %}
             </div>
@@ -23,10 +27,11 @@
 <div id="navigation-bar" class="navigation-bar">
     <!-- add buttons for each station -->
     {%for station in station_list%}
-        <button class="navigation-button title" id="{{station}}" onclick="setStation('{{station}}')">{{station}}</button>
+        <button class="navigation-button title" id="{{station}}" onclick="setStation('{{station}}')">{{station.title()}}</button>
     {%endfor%}
 </div>
 <style>
+
     .navigation-bar {
         display: none;
     }

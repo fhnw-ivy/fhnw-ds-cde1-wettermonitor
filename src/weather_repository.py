@@ -21,7 +21,7 @@ class Measurement(enum.Enum):
     Precipitation = "precipitation"
     Water_level = "water_level"
     Pressure = "barometric_pressure_qfe"
-    Humidity = "humidity"
+    Humidity = "humidity",
     Wind_direction = "wind_direction"
     Wind_force_avg_10min = "wind_force_avg_10min"
     Wind_gust_max_10min = "wind_gust_max_10min"
@@ -29,6 +29,9 @@ class Measurement(enum.Enum):
     Wind_chill = "windchill"
     Radiation = "global_radiation"
 
+
+def get_unit(variable_name: str) -> str:
+    return unit_mapping[variable_name]
 
 class WeatherQuery:
     def __init__(self, station: str, measurements: list[Measurement] = None, start_time: datetime = None,
@@ -144,7 +147,6 @@ def import_latest_data_periodic() -> None:
     time.sleep(3)
 
     import_latest_data_periodic()
-
 
 def run_query(query: WeatherQuery) -> DataFrame | None:
     try:
