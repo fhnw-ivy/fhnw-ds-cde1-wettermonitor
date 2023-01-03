@@ -49,6 +49,7 @@ def index():
 
 @app.route("/weatherstation/<station>")
 def wetterstation(station: str):
+    # Dashboard data (Current weather)
     weather_data = pd.DataFrame()
     try:
         weather_query = wr.WeatherQuery(station=station)
@@ -57,37 +58,18 @@ def wetterstation(station: str):
         if weather_data is None:
             weather_data = pd.DataFrame()
     except Exception as e:
-        logger.error(f"Error while loading data: {e}")
+        logger.error(f"Error while loading dashboard data: {e}")
 
-    return render_template(index_template, subpage="station", station=station, plot_list=wr.get_plots(), data=weather_data,
-                           station_list=wr.get_stations(), status=ServiceStatus.get_status(),
-                           refresh_interval=default_refresh_interval)
-
-
-@app.route('/weatherstation/<station>/plots')
-def plots_index(station: str):
-    return redirect(f"/weatherstation/{station}/plots/{default_plot_type}")
-
-
-@app.route("/weatherstation/<station>/plots/<plot_type>")
-def plots(station: str, plot_type: str):
-    return render_template(index_template, subpage="plots", station=station, plot_list=[plot_type],
-                           status=ServiceStatus.get_status(), refresh_interval=default_refresh_interval,
-                           station_list=wr.get_stations())
-
-
-@app.route("/weatherstation/<station>/predictions")
-def predictions(station: str):
+    # Prediction data
     prediction_data = []
     try:
         prediction_data = pred.get_predictions(station)
     except Exception as e:
-        logger.error(f"Error while loading data: {e}")
+        logger.error(f"Error while loading prediction data: {e}")
 
-    return render_template(index_template, subpage="prediction", station=station, prediction=prediction_data,
-                           station_list=wr.get_stations(), status=ServiceStatus.get_status(),
+    return render_template(index_template, subpage="station", station=station, plot_list=wr.get_plots(), data=weather_data,
+                           prediction=prediction_data, station_list=wr.get_stations(), status=ServiceStatus.get_status(),
                            refresh_interval=default_refresh_interval)
-
 
 def job_watcher():
     logger.info("Checking for pending jobs...")
