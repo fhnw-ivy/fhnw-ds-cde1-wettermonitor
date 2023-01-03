@@ -31,7 +31,7 @@ def generate_wind_speed_plot(station: str):
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min, wr.Measurement.Wind_force_avg_10min],
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min],
                                     start_time=start_time,
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
@@ -44,7 +44,7 @@ def generate_wind_speed_plot(station: str):
     plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines', name='Wind speed prediction (10min avg)')
 
     plot.update_layout(
-        title="Wind speed",
+        title="Wind speed (10min avg)",
         xaxis_title="Time",
         yaxis_title="Wind speed (m/s)"
     )
