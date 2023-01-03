@@ -1,18 +1,23 @@
-<h1 id="station-title" class="title">{{station}}</h1>
-<div id="dashboard" class="columns">
-    <div class="column is-half">
-        <div class="card" id="left-card">
-            {% include 'plots.html' %}
+<div id="dashboard" class="rows" style="">
+    <div class="row">
+        <div class="column">
+            <div class="card" id="left-card">
+                {% include 'plots.html' %}
+            </div>
         </div>
     </div>
-    <div class="column">
-        <div class="card side-card" id="top-card">
-            {% include 'current.html' %}
-        </div>
-        <div class="card side-card" id="bottom-card">
-            {% include 'prediction.html' %}
+
+     <div class="row">
+        <div class="column">
+            <div class="card side-card" id="top-card">
+                {% include 'current.html' %}
+            </div>
+            <div class="card side-card" id="bottom-card">
+                {% include 'prediction.html' %}
+            </div>
         </div>
     </div>
+
 </div>
 
 <div id="navigation-bar" class="navigation-bar">

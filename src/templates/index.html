@@ -3,30 +3,70 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="{{ refresh_interval }}" />
+    <meta http-equiv="refresh" content="{{ refresh_interval }}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weathermonitor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" />
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 1em 0 0;
-            overflow: hidden;
-        }
-        .container {
-            height: 100%;
-            max-width: 100% !important;
-        }
-        .box-container {
-            height: 100%;
-            margin-top: 3em;
-            margin-left: 2em;
-            margin-right: 2em;
-        }
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css"/>
     <link href="https://unpkg.com/intro.js/minified/introjs.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            height: 100%;
+        }
+
+        .navbar {
+            background-color: #333333;
+        }
+
+        header {
+            margin-bottom: 2em;
+        }
+
+        .navbar {
+            padding: .5em 1em;
+        }
+
+        .box-container {
+            margin: 3em 2em;
+            margin-top: 4.5em;
+        }
+
+        .navbar {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .navbar:hover {
+            background-color: #444444;
+        }
+
+        .box-container {
+            animation: fadein 2s;
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
 
 </head>
@@ -38,12 +78,18 @@
             <div class="navbar-item">
                 <button class="button is-primary" onclick="initIntro()">Start Intro</button>
             </div>
+
+            <div class="navbar-item">
+                <h3 id="station-title" style="text-align: center; color: white" class="title">{{ station }}</h3>
+            </div>
+
             <div class="navbar-end">
               <span class="navbar-item">
-                <h2 last_updated class="subtitle" id="updated-subtitle" style="color: white">Last updated at {{status[1]}}</h2>
+                <h3 last_updated class="subtitle" id="updated-subtitle"
+                    style="color: white">Last updated at {{ status[1] }}</h3>
               </span>
 
-              <span class="navbar-item">
+                <span class="navbar-item">
                 <span class="tag is-info is-medium" id="status">
                   <span class="icon is-small">
                     <i class="fas fa-circle"></i>
@@ -55,8 +101,6 @@
         </nav>
     </header>
     <div class="box-container">{% include 'station.html' %}</div>
-
-
 </div>
 
 
@@ -112,7 +156,7 @@
                     intro: "To switch the station, simply click on the title."
                 }
             ],
-            showStepNumbers:false
+            showStepNumbers: false
         });
         intro.onbeforechange(async function (element) {
             if (this._currentStep === 8) {

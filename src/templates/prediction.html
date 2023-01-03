@@ -1,17 +1,22 @@
+<style>
+    .prediction-item {
+        font-size: .4em;
+    }
+
+    .small-desc {
+        font-size: .3em;
+    }
+</style>
+
 <div class="option plot">
     {% for index in range(0, prediction|length) %}
         {% for key, value in prediction[index].items() %}
-            <div class="prediction-item" style="margin: 0 20px; text-align:center">
-                <div>{{key}}</div>
-                <div><img src="../../static/images/direction.png" style="transform: rotate({{ value[1]-45 }}deg); width: 20px; height: 20px;" alt="wind direction icon"></div>
-                <div>{{value[1]}}°</div>
-                <div>{{value[0]}} m/s</div>
+            <div style="margin: 0 20px; text-align:center">
+                <div class="prediction-item"><b>{{key}}</b></div>
+                <div class="prediction-item"><img src="../../static/images/direction.png" style="transform: rotate({{ value[1]-45 }}deg); width: 30px; height: 30px; margin-top: 5px" alt="wind direction icon"></div>
+                <div class="small-desc">{{value[1]}}°</div>
+                <div class="small-desc">{{value[0]}} m/s</div>
             </div>
         {% endfor %}
     {% endfor %}
 </div>
-<style>
-    .prediction-item {
-        font-size: 14px;
-    }
-</style>
