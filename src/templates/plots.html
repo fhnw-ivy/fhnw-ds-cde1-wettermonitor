@@ -1,19 +1,19 @@
 <div class="plot-container slider" id="btn-modal">
 
-{% for plot_type in plot_list %}
-  <div class="option plot" id="btn-modal">
-    <object data={{ url_for('static', filename='plots/{station}/{plot_type}.png'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
-  </div>
-{% endfor %}
+    {% for plot_type in plot_list %}
+        <div class="option plot" id="btn-modal">
+            <object data={{ url_for('static', filename='plots/{station}/{plot_type}.png'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
+        </div>
+    {% endfor %}
 </div>
 
 <div id="modal-plots" class="modal">
     <div class="modal-content">
-      <span class="close">&times;</span>
+        <span class="close">&times;</span>
         {% for plot_type in plot_list %}
-          <div class="option plot">
-            <object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
-          </div>
+            <div class="option plot">
+                <object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
+            </div>
         {% endfor %}
 
     </div>
@@ -40,7 +40,6 @@
     }
 
 
-
     /* Arrows */
     .right-arrow,
     .left-arrow {
@@ -57,6 +56,7 @@
     .right-arrow {
         right: 1rem;
     }
+
     .left-arrow {
         left: 1rem;
     }
@@ -94,43 +94,47 @@
     }
 
     /* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
 
-/* Modal Content */
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-}
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
 
-/* The Close Button */
-.close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        position: fixed; /* Add fixed position */
+        top: 0; /* Stick to top of screen */
+        right: 0; /* Stick to right side of screen */
+        font-size: 28px;
+        font-weight: bold;
+        padding: 0.5rem; /* Add some padding */
+    }
 
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
 
 
     /* Hide the scrollbar */
@@ -147,14 +151,17 @@
             width: 32px;
             height: 12px;
         }
+
         .right-arrow::after,
         .left-arrow::after {
             bottom: 16px;
         }
+
         .right-arrow::before,
         .left-arrow::before {
             top: 20px;
         }
+
         .right-arrow::before,
         .right-arrow::after {
             right: 0;
@@ -163,30 +170,30 @@
 </style>
 
 <script>
-var modal = document.getElementById("modal-plots");
+    var modal = document.getElementById("modal-plots");
 
-// Get the button that opens the modal
-var btn = document.getElementById("btn-modal");
+    // Get the button that opens the modal
+    var btn = document.getElementById("btn-modal");
 
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
 
-// When the user clicks on the button, open the modal
-btn.onclick = function() {
-modal.style.display = "block";
-}
+    // When the user clicks on the button, open the modal
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
 
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-modal.style.display = "none";
-}
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-if (event.target == modal) {
-  modal.style.display = "none";
-}
-}
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 
 
 </script>
