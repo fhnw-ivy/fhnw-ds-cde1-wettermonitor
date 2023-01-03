@@ -1,8 +1,7 @@
 <div class="option plot">
-    <h1>Wind predictions</h1>
     {% for index in range(0, prediction|length) %}
         {% for key, value in prediction[index].items() %}
-            <div style="margin: 0 20px; text-align:center">
+            <div class="prediction-item" style="margin: 0 20px; text-align:center">
                 <div>{{key}}</div>
                 <div><img src="../../static/images/direction.png" style="transform: rotate({{ value[1]-45 }}deg); width: 20px; height: 20px;" alt="wind direction icon"></div>
                 <div>{{value[1]}}°</div>
@@ -11,3 +10,8 @@
         {% endfor %}
     {% endfor %}
 </div>
+<style>
+    .prediction-item {
+        font-size: 7px;
+    }
+</style>
