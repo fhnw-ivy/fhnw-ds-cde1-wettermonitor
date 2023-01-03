@@ -1,3 +1,4 @@
+import datetime
 import os
 import threading
 import time
@@ -35,6 +36,12 @@ default_station = wr.get_stations()[0]
 default_plot_type = "wind_speed_with_predictions"
 
 
+def convert_to_datetime_string(dt):
+    if dt.date() == datetime.datetime.now().date():
+        return dt.strftime("%H:%M")
+    else:
+        return dt.strftime("%d.%m.%Y %H:%M")
+
 @app.before_request
 def before_request():
     if not service_ready:
@@ -64,11 +71,21 @@ def wetterstation(station: str):
     prediction_data = []
     try:
         prediction_data = pred.get_predictions(station)
+
+        # Replace datetime of first prediction with datetime string
+        prediction_data[0] = {convert_to_datetime_string(list(prediction_data[0].keys())[0]): list(prediction_data[0].values())[0]}
+
     except Exception as e:
         logger.error(f"Error while loading prediction data: {e}")
 
+    # Sanitize service status date
+    service_status = ServiceStatus.get_status()
+    if service_status[1] is not None:
+        service_status[1] = convert_to_datetime_string(service_status[1])
+
+
     return render_template(index_template, subpage="station", station=station, plot_list=wr.get_plots(), data=weather_data,
-                           prediction=prediction_data, station_list=wr.get_stations(), status=ServiceStatus.get_status(),
+                           prediction=prediction_data, station_list=wr.get_stations(), status=service_status,
                            refresh_interval=default_refresh_interval)
 
 def job_watcher():

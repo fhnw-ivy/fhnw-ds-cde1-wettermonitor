@@ -5,7 +5,7 @@ class ServiceStatus:
 
     @staticmethod
     def get_status():
-        return ServiceStatus.is_live, ServiceStatus.last_fetch
+        return [ServiceStatus.is_live, ServiceStatus.last_fetch]
 
     @staticmethod
     def update_last_fetch(time):

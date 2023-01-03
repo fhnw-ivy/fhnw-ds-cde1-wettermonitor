@@ -11,6 +11,7 @@ import weather_repository as wr
 logger = logging.getLogger("app")
 
 plots_directory = "./static/plots/"
+plots_size = (1024, 600)
 
 
 def generate_wind_speed_plot_with_predictions(station: str):
@@ -24,16 +25,13 @@ def generate_wind_speed_plot_with_predictions(station: str):
 
     predictions = pr.get_predictions(station, relative_datetime_labels=True)
 
-    plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min",
-                   title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden",
-                   labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
-
-    plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='markers', name='Vorhersage')
+    plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min")
+    plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='markers', name='Prediction')
 
     plot.update_layout(
-        title="Windgeschwindigkeit (10min Mittelwert) der letzten 24 Stunden und Vorhersage der nächsten Stunde",
-        xaxis_title="Zeit",
-        yaxis_title="Windgeschwindigkeit (m/s) (10min Mittelwert)",
+        title="Wind speed (10min average)",
+        xaxis_title="Time",
+        yaxis_title="Wind speed (m/s)",
     )
 
     save_plot(plot, "wind_speed_with_predictions", station)
@@ -51,15 +49,15 @@ def generate_wind_speed_and_direction_plot_with_predictions(station: str):
 
     predictions = pr.get_predictions(station, relative_datetime_labels=True)
 
-    plot = px.bar_polar(weather_data, r="wind_speed_avg_10min", theta="wind_direction",
-                        title="Windgeschwindigkeit (10min Mittelwert) und Windrichtung der letzten 24 Stunden",
-                        labels={"value": "Windgeschwindigkeit (m/s)", "variable": "Messung", "time": "Zeit"})
+    plot = px.bar_polar(weather_data, r="wind_speed_avg_10min", theta="wind_direction")
 
     plot.add_barpolar(r=list(x[0] for x in predictions.values()), theta=list(x[1] for x in predictions.values()),
-                      name='Vorhersage')
+                      name='Prediction')
 
     plot.update_layout(
-        title="Windgeschwindigkeit (10min Mittelwert) und Windrichtung der letzten 24 Stunden und Vorhersage der nächsten Stunde"
+        title="Wind speed and direction (10min average)",
+        xaxis_title="Time",
+        yaxis_title="Wind speed (m/s)",
     )
 
     save_plot(plot, "wind_speed_and_direction_with_predictions", station)
@@ -72,7 +70,8 @@ def save_plot(plot, plot_name, station):
     plot_file_name = f"{station}/{plot_name}"
 
     try:
-        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".png"), height=460)
+        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".png"),
+                         width=plots_size[0], height=plots_size[1])
         logger.debug(f"Saved plot {plot_name} for station {station} as png file.")
     except Exception as e:
         logger.error(f"Saving plot {plot_name} failed.")

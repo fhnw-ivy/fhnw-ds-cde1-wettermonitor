@@ -10,10 +10,8 @@ logger = logging.getLogger("app")
 
 import weather_repository as wr
 
-datetime_format = "%Y-%m-%d %H:%M"
 predicted_measurements = [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction, wr.Measurement.Air_temp]
 prediction_cache = {}
-
 
 def get_predictions(station: str, relative_datetime_labels=False):
     """
@@ -57,9 +55,9 @@ def __get_cached_predictions(station: str, latest_data_datetime: datetime.dateti
     Returns: The cached predictions if available, otherwise None
     """
     if station in prediction_cache:
-        first_prediction_datetime = datetime.datetime.strptime(list(prediction_cache[station][0].keys())[0], datetime_format)
-        if first_prediction_datetime.strftime(datetime_format) == latest_data_datetime.strftime(datetime_format):
+        if list(prediction_cache[station][0].keys())[0] == latest_data_datetime:
             return prediction_cache[station]
+
     return None
 
 
@@ -94,8 +92,6 @@ def __predict(station: str, air_temperature_10min_before: float, wind_speed_avg_
         })
 
         predictions = [[wind_speed_avg_10min_before[0], wind_direction_10min_before[0]]]
-
-        data_datetime = data_datetime.strftime(datetime_format)
         labelled_predictions = [{data_datetime: [wind_speed_avg_10min_before[0], wind_direction_10min_before[0]]}]
 
         for i in range(0, 6):
@@ -120,7 +116,7 @@ def convert_labelled_predictions_to_relative_datetime(labelled_predictions):
         labelled_predictions: The labelled predictions to convert
     Returns: A dictionary with relative datetime as keys and the predictions as values
     """
-    first_prediction_datetime = datetime.datetime.strptime(list(labelled_predictions[0].keys())[0], datetime_format)
+    first_prediction_datetime = list(labelled_predictions[0].keys())[0]
     return {first_prediction_datetime + datetime.timedelta(minutes=int(key[1:3])): value
             for prediction in labelled_predictions
             for key, value in prediction.items() if key.startswith("+")}
