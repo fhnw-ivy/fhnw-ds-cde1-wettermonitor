@@ -56,7 +56,8 @@ def __get_cached_predictions(station: str, latest_data_datetime: datetime.dateti
     """
     if station in prediction_cache:
         if list(prediction_cache[station][0].keys())[0] == latest_data_datetime:
-            return prediction_cache[station]
+            # Return copy of cached predictions
+            return [prediction.copy() for prediction in prediction_cache[station]]
 
     return None
 
