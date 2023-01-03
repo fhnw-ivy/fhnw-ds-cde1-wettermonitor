@@ -30,9 +30,26 @@ class Measurement(enum.Enum):
     Radiation = "global_radiation"
 
 
+
+unit_mapping = {
+    "air_temperature": "°C",
+    "water_temperature": "°C",
+    "dew_point": "°C",
+    "precipitation": "mm",
+    "water_level": "m",
+    "barometric_pressure_qfe": "hPa",
+    "humidity": "%",
+    "wind_direction": "°",
+    "wind_force_avg_10min": "Bft",
+    "wind_gust_max_10min": "Bft",
+    "wind_speed_avg_10min": "km/h",
+    "windchill": "°C",
+    "global_radiation": "W/m²"
+}
+
+
 def get_unit(variable_name: str) -> str:
     return unit_mapping[variable_name]
-
 class WeatherQuery:
     def __init__(self, station: str, measurements: list[Measurement] = None, start_time: datetime = None,
                  stop_time: datetime = None):
