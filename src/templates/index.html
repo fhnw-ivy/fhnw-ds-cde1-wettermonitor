@@ -21,7 +21,6 @@
         }
 
         body {
-            background-color: #f4f4f4;
             height: 100%;
         }
 
@@ -100,9 +99,9 @@
             </div>
         </nav>
     </header>
-    <div class="box-container">{% include 'station.html' %}</div>
-</div>
 
+    <div class="box-container" style="margin-top: 100px">{% include 'station.html' %}</div>
+</div>
 
 <script>
     if (navigator.onLine && '{{status[0]}}' === 'True') {
