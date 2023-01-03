@@ -76,6 +76,8 @@ def generate_air_temperature_plot(station: str):
         yaxis_title="Temperature (C)",
     )
 
+    plot.update_yaxes(range=[min(-5, weather_data["air_temperature"].min() - 3, max(5, weather_data["air_temperature"].max() + 3))])
+
     save_plot(plot, "air_temperature", station)
 
 def generate_wind_direction_plot(station: str):
@@ -105,6 +107,8 @@ def generate_wind_direction_plot(station: str):
         xaxis_title="Time",
         yaxis_title="Wind direction (degree)",
     )
+
+    plot.update_yaxes(range=[0, 360])
 
     save_plot(plot, "wind_direction", station)
 
