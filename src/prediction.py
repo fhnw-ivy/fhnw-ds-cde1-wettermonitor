@@ -119,7 +119,7 @@ def convert_labelled_predictions_to_relative_datetime(labelled_predictions):
     first_prediction_datetime = list(labelled_predictions[0].keys())[0]
     return {first_prediction_datetime + datetime.timedelta(minutes=int(key[1:3])): value
             for prediction in labelled_predictions
-            for key, value in prediction.items() if key.startswith("+")}
+            for key, value in prediction.items() if not isinstance(key, datetime.datetime) and key.startswith("+")}
 
 def __predict_all_stations():
     logger.debug('Predicting all stations')
