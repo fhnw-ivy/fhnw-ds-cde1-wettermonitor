@@ -159,11 +159,6 @@ def run_query(query: WeatherQuery) -> DataFrame | None:
 def get_stations():
     return config.stations
 
-
-def get_plots():
-    return config.plots
-
-
 def health_check():
     try:
         query = WeatherQuery(station=config.stations[0], measurements=[Measurement.Air_temp])

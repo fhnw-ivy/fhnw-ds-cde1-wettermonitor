@@ -83,8 +83,7 @@ def wetterstation(station: str):
     if service_status[1] is not None:
         service_status[1] = convert_to_datetime_string(service_status[1])
 
-
-    return render_template(index_template, subpage="station", station=station, plot_list=wr.get_plots(), data=weather_data,
+    return render_template(index_template, subpage="station", station=station, plot_list=plt.get_plots(), data=weather_data,
                            prediction=prediction_data, station_list=wr.get_stations(), status=service_status,
                            refresh_interval=default_refresh_interval)
 

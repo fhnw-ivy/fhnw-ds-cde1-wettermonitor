@@ -13,12 +13,25 @@ logger = logging.getLogger("app")
 plots_directory = "./static/plots/"
 plots_size = (1024, 600)
 
+def get_plots():
+    """
+    Returns a list of all plot names.
+    """
+    return ['wind_with_predictions', 'air_temperature', 'wind_direction']
 
 def generate_wind_speed_plot_with_predictions(station: str):
+    """
+    Generates a plot of the wind speed measurements for the given station. The plot also contains predictions for the next 24 hours.
+    Args:
+        station: The station to generate the plot for.
+
+    Returns: None
+    """
+
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min],
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min, wr.Measurement.Wind_force_avg_10min],
                                     start_time=start_time,
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
@@ -26,44 +39,82 @@ def generate_wind_speed_plot_with_predictions(station: str):
     predictions = pr.get_predictions(station, relative_datetime_labels=True)
 
     plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min")
-    plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='markers', name='Prediction')
+
+    plot.add_scatter(x=weather_data.index, y=weather_data["wind_gust_max_10min"], name="Wind gust (10min max)", mode="lines")
+    plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines', name='Prediction (10min avg)')
 
     plot.update_layout(
-        title="Wind speed (10min average)",
+        title="Wind speed",
         xaxis_title="Time",
-        yaxis_title="Wind speed (m/s)",
+        yaxis_title="Wind speed (m/s)"
     )
 
-    save_plot(plot, "wind_speed_with_predictions", station)
+    save_plot(plot, "wind_with_predictions", station)
 
+def generate_air_temperature_plot(station: str):
+    """
+    Generates a plot of the air temperature for the given station.
+    Args:
+        station: The station to generate the plot for.
 
-def generate_wind_speed_and_direction_plot_with_predictions(station: str):
+    Returns: None
+    """
+
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    weather_query = wr.WeatherQuery(station=station,
-                                    measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction],
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Air_temp],
                                     start_time=start_time,
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
-    predictions = pr.get_predictions(station, relative_datetime_labels=True)
-
-    plot = px.bar_polar(weather_data, r="wind_speed_avg_10min", theta="wind_direction")
-
-    plot.add_barpolar(r=list(x[0] for x in predictions.values()), theta=list(x[1] for x in predictions.values()),
-                      name='Prediction')
+    plot = px.line(weather_data, x=weather_data.index, y="air_temperature")
 
     plot.update_layout(
-        title="Wind speed and direction (10min average)",
+        title="Air temperature",
         xaxis_title="Time",
-        yaxis_title="Wind speed (m/s)",
+        yaxis_title="Temperature (C)",
     )
 
-    save_plot(plot, "wind_speed_and_direction_with_predictions", station)
+    save_plot(plot, "air_temperature", station)
 
+def generate_wind_direction_plot(station: str):
+    """
+    Generates a plot of the wind direction for the given station.
+    Args:
+        station: The station to generate the plot for.
+
+    Returns: None
+    """
+
+    start_time = datetime.datetime.now() - datetime.timedelta(days=1)
+    stop_time = datetime.datetime.now()
+
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_direction],
+                                    start_time=start_time,
+                                    stop_time=stop_time)
+    weather_data = wr.run_query(weather_query)
+
+    plot = px.line(weather_data, x=weather_data.index, y="wind_direction")
+
+    plot.update_layout(
+        title="Wind direction",
+        xaxis_title="Time",
+        yaxis_title="Wind direction (degree)",
+    )
+
+    save_plot(plot, "wind_direction", station)
 
 def save_plot(plot, plot_name, station):
+    """
+    Saves the given plot to a file.
+    Args:
+        plot: The plot to save.
+        plot_name: The name of the plot.
+        station: The station the plot is for.
+    Returns: None
+    """
+
     if not os.path.exists(plots_directory + station):
         os.makedirs(plots_directory + station)
 
@@ -79,6 +130,11 @@ def save_plot(plot, plot_name, station):
 
 
 def generate_all_plots():
+    """
+    Generates all plots for all stations.
+    Returns: None
+    """
+
     for station in wr.get_stations():
         try:
             generate_wind_speed_plot_with_predictions(station)
@@ -87,13 +143,29 @@ def generate_all_plots():
             logger.error(e)
 
         try:
-            generate_wind_speed_and_direction_plot_with_predictions(station)
+            generate_air_temperature_plot(station)
+        except Exception as e:
+            logger.error(f"Generating air temperature plot for station {station} failed.")
+            logger.error(e)
+
+        try:
+            generate_wind_direction_plot(station)
         except Exception as e:
             logger.error(f"Generating wind direction plot for station {station} failed.")
             logger.error(e)
 
+        try:
+            generate_weekly_wind_speed_plot(station)
+        except Exception as e:
+            logger.error(f"Generating weekly wind speed plot for station {station} failed.")
+            logger.error(e)
 
 def init():
+    """
+    Initializes the plotting module.
+    Returns: None
+    """
+
     # First generate all plots
     generate_all_plots()
 
