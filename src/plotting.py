@@ -17,11 +17,11 @@ def get_plots():
     """
     Returns a list of all plot names.
     """
-    return ['wind_with_predictions', 'air_temperature', 'wind_direction']
+    return ['wind_speed', 'air_temperature', 'wind_direction']
 
-def generate_wind_speed_plot_with_predictions(station: str):
+def generate_wind_speed_plot(station: str):
     """
-    Generates a plot of the wind speed measurements for the given station. The plot also contains predictions for the next 24 hours.
+    Generates a plot of the wind speed measurements for the given station. The plot also contains predictions for the next hour.
     Args:
         station: The station to generate the plot for.
 
@@ -31,7 +31,7 @@ def generate_wind_speed_plot_with_predictions(station: str):
     start_time = datetime.datetime.now() - datetime.timedelta(days=1)
     stop_time = datetime.datetime.now()
 
-    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min, wr.Measurement.Wind_force_avg_10min],
+    weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min],
                                     start_time=start_time,
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
@@ -41,15 +41,15 @@ def generate_wind_speed_plot_with_predictions(station: str):
     plot = px.line(weather_data, x=weather_data.index, y="wind_speed_avg_10min")
 
     plot.add_scatter(x=weather_data.index, y=weather_data["wind_gust_max_10min"], name="Wind gust (10min max)", mode="lines")
-    plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines', name='Prediction (10min avg)')
+    plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines', name='Wind speed prediction (10min avg)')
 
     plot.update_layout(
-        title="Wind speed",
+        title="Wind speed (10min avg)",
         xaxis_title="Time",
         yaxis_title="Wind speed (m/s)"
     )
 
-    save_plot(plot, "wind_with_predictions", station)
+    save_plot(plot, "wind_speed", station)
 
 def generate_air_temperature_plot(station: str):
     """
@@ -80,7 +80,7 @@ def generate_air_temperature_plot(station: str):
 
 def generate_wind_direction_plot(station: str):
     """
-    Generates a plot of the wind direction for the given station.
+    Generates a plot of the wind direction for the given station. The plot also contains predictions for the next hour.
     Args:
         station: The station to generate the plot for.
 
@@ -95,7 +95,10 @@ def generate_wind_direction_plot(station: str):
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
+    predictions = pr.get_predictions(station, relative_datetime_labels=True)
+
     plot = px.line(weather_data, x=weather_data.index, y="wind_direction")
+    plot.add_scatter(x=list(predictions.keys()), y=list(x[1] for x in predictions.values()), mode='lines', name='Prediction')
 
     plot.update_layout(
         title="Wind direction",
@@ -137,7 +140,7 @@ def generate_all_plots():
 
     for station in wr.get_stations():
         try:
-            generate_wind_speed_plot_with_predictions(station)
+            generate_wind_speed_plot(station)
         except Exception as e:
             logger.error(f"Generating wind speed plot for station {station} failed.")
             logger.error(e)
@@ -152,12 +155,6 @@ def generate_all_plots():
             generate_wind_direction_plot(station)
         except Exception as e:
             logger.error(f"Generating wind direction plot for station {station} failed.")
-            logger.error(e)
-
-        try:
-            generate_weekly_wind_speed_plot(station)
-        except Exception as e:
-            logger.error(f"Generating weekly wind speed plot for station {station} failed.")
             logger.error(e)
 
 def init():
