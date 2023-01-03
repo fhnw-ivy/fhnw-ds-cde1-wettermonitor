@@ -4,7 +4,6 @@
             <object id='{{plot_type}}' data={{ url_for('static', filename='plots/{station}/{plot_type}.png'.format(station=station, plot_type=plot_type)) }} width="100%"></object>
         </div>
     {%endfor%}
-    {% include 'prediction.html' %}
 </div>
 
 
