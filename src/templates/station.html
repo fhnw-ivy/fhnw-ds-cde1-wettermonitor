@@ -2,12 +2,12 @@
     <div class="row">
         <div style="height:10vm" class="columns">
             <div class="column is-two-thirds">
-                <div style="height:100%" class="card">
+                <div style="height:100%" class="card" id="plots-slider">
                     {% include 'plots.html' %}
                 </div>
             </div>
             <div class="column is-one-third">
-                <div style="height:100%" class="card">
+                <div style="height:100%" class="card" id="current-metrics">
                     {% include 'current.html' %}
                 </div>
             </div>
@@ -18,7 +18,7 @@
         <div class="column" style="
             height: 100%;
         ">
-            <div class="card side-card" id="bottom-card">
+            <div class="card side-card" id="predictions">
                 {% include 'prediction.html' %}
             </div>
         </div>

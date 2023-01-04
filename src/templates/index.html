@@ -102,11 +102,11 @@
 </head>
 
 <body>
-<div class="container">
+<div class="container" id="dashboard">
     <header>
         <nav class="navbar is-dark is-fixed-top">
             <div class="navbar-item">
-                <button class="button is-primary" onclick="initIntro()">Start Intro</button>
+                <button id="start-intro-btn" class="button is-primary" onclick="initIntro()">Intro</button>
             </div>
 
             <div class="navbar-item">
@@ -156,6 +156,11 @@
 
 
 <script>
+    // Hide intro button if the current subpage is not the station
+    if ('{{subpage}}' !== 'station') {
+        document.getElementById('start-intro-btn').style.display = 'none';
+    }
+
     function initIntro() {
         var intro = introJs();
         intro.setOptions({
@@ -168,20 +173,24 @@
                     intro: "This is the dashboard. It shows you the current weather conditions at your station."
                 },
                 {
-                    element: '#left-card',
+                    element: '#plots-slider',
                     intro: "Here you can see the main plots of the current station. Swiping left and right will change plot."
                 },
                 {
-                    element: '#top-card',
-                    intro: "Top card stuff"
+                    element: '#plots-slider',
+                    intro: "You can tap on the plot to see a larger version of it and dive deeper into the data."
                 },
                 {
-                    element: '#bottom-card',
-                    intro: "Bottom card stuff"
+                    element: '#current-metrics',
+                    intro: "Here you can see the current metrics of the station, all in one place."
+                },
+                {
+                    element: '#predictions',
+                    intro: "Here you can see the predictions for the next hour for wind speed and direction."
                 },
                 {
                     element: '#updated-subtitle',
-                    intro: "This is the last time the station was updated.",
+                    intro: "This is the last time the station data was updated.",
                     position: 'right'
                 },
                 {
@@ -190,7 +199,12 @@
                 },
                 {
                     element: '#station-title',
-                    intro: "To switch the station, simply click on the title."
+                    intro: "To switch the station, simply tap on the title in order to open the navigation menu."
+                },
+                {
+                    element: '#start-intro-btn',
+                    intro: "Tap here to start the tour again.",
+                    position: 'right'
                 }
             ],
             showStepNumbers: false
