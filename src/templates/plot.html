@@ -1,0 +1,22 @@
+<style>
+  .back-button {
+    border: 2px solid black; /* Green */
+    border-radius: 4px;
+    color: black;
+    padding: 3px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .back-button:hover {
+    background-color: lightgray;
+    color: white;
+  }
+</style>
+
+<a href="http://localhost:6540/weatherstation/{{ station }}" class="back-button">Back</a>
+
+<object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"></object>

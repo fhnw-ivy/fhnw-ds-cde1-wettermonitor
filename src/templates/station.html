@@ -25,47 +25,7 @@
     </div>
 
 </div>
-
-<div id="navigation-bar" class="navigation-bar">
-    <!-- add buttons for each station -->
-    {%for station in station_list%}
-        <button class="navigation-button title" id="{{station}}" onclick="setStation('{{station}}')">{{station.title()}}</button>
-    {%endfor%}
-</div>
 <style>
-
-    .navigation-bar {
-        display: none;
-    }
-
-    .navigation-bar.active {
-        display: flex;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .navigation-button {
-        /* add some styling for the navigation buttons */
-        font: 5em/1 'Open Sans', helvetica, sans-serif;
-        font-size: 58px;
-        -webkit-font-smoothing: antialiased;
-        background-color: white;
-        min-height: 40%;
-        min-width: 100%;
-        border: none;
-        padding: 16px 32px;
-        cursor: pointer;
-        outline: none;
-        margin: 8px;
-    }
     .side-card {
         height: 50%;
     }
@@ -84,22 +44,4 @@
         flex-direction: column;
     }
 </style>
-<script>
-    // add a click event listener to the title element
-    document.getElementById('station-title').addEventListener('click', function() {
-        // show the navigation bar
-        document.getElementById('navigation-bar').classList.add('active');
-    });
-
-    // add a function to set the current station
-    function setStation(station) {
-        // update the station name in the title element
-        document.getElementById('station-title').textContent = station;
-
-        // hide the navigation bar
-        document.getElementById('navigation-bar').classList.remove('active');
-
-        window.location.href = 'http://localhost:6540/weatherstation/' + station;
-    }
-</script>
 

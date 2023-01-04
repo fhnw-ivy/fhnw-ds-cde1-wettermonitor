@@ -49,6 +49,14 @@ def generate_wind_speed_plot(station: str):
         yaxis_title="Wind speed (m/s)"
     )
 
+    # Move legend to the top left
+    plot.update_layout(legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    ))
+
     save_plot(plot, "wind_speed", station)
 
 def generate_air_temperature_plot(station: str):
@@ -107,6 +115,14 @@ def generate_wind_direction_plot(station: str):
         yaxis_title="Wind direction (degree)",
     )
 
+    # Move legend to the top left
+    plot.update_layout(legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    ))
+
     plot.update_yaxes(range=[0, 360])
 
     save_plot(plot, "wind_direction", station)
@@ -127,8 +143,8 @@ def save_plot(plot, plot_name, station):
     plot_file_name = f"{station}/{plot_name}"
 
     try:
-        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".png"),
-                         width=plots_size[0], height=plots_size[1])
+        # plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".png"),
+        #                  width=plots_size[0], height=plots_size[1])
 
         plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".svg"))
 

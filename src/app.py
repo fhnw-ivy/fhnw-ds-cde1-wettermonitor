@@ -38,10 +38,26 @@ show_current = ['air_temperature', 'water_temperature', 'barometric_pressure_qfe
 
 
 def convert_to_datetime_string(dt):
+    """
+    Converts a datetime object to a string for the template
+    Args:
+        dt: Datetime object
+
+    Returns: String representation of the datetime object
+    """
+
     if dt.date() == datetime.datetime.now().date():
         return dt.strftime("%H:%M")
     else:
         return dt.strftime("%d.%m.%Y %H:%M")
+
+def get_sanitized_service_status():
+    """
+    Returns the service status in a format that can be used in the template
+    Returns: Well formatted service status
+    """
+    is_live, last_fetch = ServiceStatus.get_status()
+    return [is_live, convert_to_datetime_string(last_fetch)]
 
 @app.before_request
 def before_request():
@@ -79,11 +95,6 @@ def wetterstation(station: str):
     except Exception as e:
         logger.error(f"Error while loading prediction data: {e}")
 
-    # Sanitize service status date
-    service_status = ServiceStatus.get_status()
-    if service_status[1] is not None:
-        service_status[1] = convert_to_datetime_string(service_status[1])
-
     current_data = {}
     for variable in show_current:
         current_data[variable] = {
@@ -92,9 +103,18 @@ def wetterstation(station: str):
                                     "unit": wr.get_unit(variable)
                                  }
 
+        # Round all numbers to 2 decimal places
+        if isinstance(current_data[variable]["value"], float):
+            current_data[variable]["value"] = round(current_data[variable]["value"], 2)
+
     return render_template(index_template, subpage="station", station=station, plot_list=plt.get_plots(), data=weather_data,
-                           prediction=prediction_data, station_list=wr.get_stations(), status=service_status,
+                           prediction=prediction_data, station_list=wr.get_stations(), status=get_sanitized_service_status(),
                            refresh_interval=default_refresh_interval, current_list=current_data)
+
+@app.route("/weatherstation/<station>/plots/<plot_type>")
+def plot(station: str, plot_type: str):
+    return render_template(index_template, subpage="plot", station=station, plot_list=plt.get_plots(), station_list=wr.get_stations(), status=get_sanitized_service_status(),
+                           refresh_interval=default_refresh_interval, plot_type=plot_type)
 
 def job_watcher():
     logger.info("Checking for pending jobs...")
