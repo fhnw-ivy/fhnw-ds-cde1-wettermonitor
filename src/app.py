@@ -61,6 +61,10 @@ def get_sanitized_service_status():
 
 @app.before_request
 def before_request():
+    """
+    Checks if the service is ready to serve requests
+    Returns: Redirect to loading page if service is not ready
+    """
     if not service_ready:
         return render_template(loading_template)
 
@@ -96,16 +100,17 @@ def wetterstation(station: str):
         logger.error(f"Error while loading prediction data: {e}")
 
     current_data = {}
-    for variable in show_current:
-        current_data[variable] = {
-                                    "name": variable.replace("_", " ").title(),
-                                    "value": weather_data[variable].iloc[-1],
-                                    "unit": wr.get_unit(variable)
-                                 }
+    if weather_data is not None and not weather_data.empty:
+        for variable in show_current:
+            current_data[variable] = {
+                                        "name": variable.replace("_", " ").title(),
+                                        "value": weather_data[variable].iloc[-1],
+                                        "unit": wr.get_unit(variable)
+                                     }
 
-        # Round all numbers to 2 decimal places
-        if isinstance(current_data[variable]["value"], float):
-            current_data[variable]["value"] = round(current_data[variable]["value"], 2)
+            # Round all numbers to 2 decimal places
+            if isinstance(current_data[variable]["value"], float):
+                current_data[variable]["value"] = round(current_data[variable]["value"], 2)
 
     return render_template(index_template, subpage="station", station=station, plot_list=plt.get_plots(), data=weather_data,
                            prediction=prediction_data, station_list=wr.get_stations(), status=get_sanitized_service_status(),
