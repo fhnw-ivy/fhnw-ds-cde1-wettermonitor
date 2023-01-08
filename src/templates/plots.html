@@ -38,6 +38,8 @@
     "use strict";
     const slider = document.querySelector(".slider");
 
+    const slide_interval = 30000;
+
     /**
      * @brief Scroll to the right
      */
@@ -66,14 +68,14 @@
     }
 
     // Auto slider
-    let timerId = setInterval(scrollRight, 15000);
+    let timerId = setInterval(scrollRight, slide_interval);
 
     /**
      * @brief Reset timer for scrolling right
      */
     function resetTimer() {
         clearInterval(timerId);
-        timerId = setInterval(scrollRight, 15000);
+        timerId = setInterval(scrollRight, slide_interval);
     }
 
 </script>
