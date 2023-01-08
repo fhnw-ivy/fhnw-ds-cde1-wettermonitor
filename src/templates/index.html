@@ -12,8 +12,13 @@
     <link href="https://unpkg.com/intro.js/minified/introjs.min.css" rel="stylesheet">
 
     <style>
+        html {
+            background-color: #f4f4f4;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
+            height: 100%;
         }
 
         h1, h2, h3 {
@@ -202,6 +207,10 @@
                     intro: "To switch the station, simply tap on the title in order to open the navigation menu."
                 },
                 {
+                    element: '#mythenquai',
+                    intro: "Simply click here to change to Mythenquai station. Enjoy!"
+                },
+                {
                     element: '#start-intro-btn',
                     intro: "Tap here to start the tour again.",
                     position: 'right'
@@ -213,6 +222,12 @@
             if (this._currentStep === 8) {
                 setTimeout(function () {
                     $("#station-title").click();
+                });
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            if (this._currentStep === 10) {
+                setTimeout(function () {
+                    $("#mythenquai").click();
                 });
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
