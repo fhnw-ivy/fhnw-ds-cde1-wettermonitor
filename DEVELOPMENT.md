@@ -259,7 +259,7 @@ As the list already hints, two output variables were chosen. To predict two vari
 ## Measuring Accuracy
 SciKit Learn's Machine Learning algorithms provide a `score()` function to each fitted model. Through calling `model.fit().score()` we measured an accuracy of about 70% throughout our model. This value is calculated by dividing the correctly predicted values by all predicted values in the training set.
 
-By using the [Features list](/DEVELOPMENT.md/#list-of-features) above we found that those features provide the best accuracy while training the model in a timely manner (resp. [Curse of Dimensionaliy](https://www.wikiwand.com/en/Curse_of_dimensionality)).
+By using the [Features list](/DEVELOPMENT.md/#list-of-features) above we found that those features provide the best accuracy while training the model in a timely manner (resp. [Curse of Dimensionality](https://www.wikiwand.com/en/Curse_of_dimensionality)).
 
 ## Implementation into production
 To use the trained model in the application the package [Pickle](https://docs.python.org/3/library/pickle.html) was used. Pickle dumps a *pkl* file onto the Filesystem which then can be used with `pickle.load(open('model.pkl', 'rb')).predict(input_variables)` to predict future measurements based on a persisted model.
