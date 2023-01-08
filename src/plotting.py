@@ -148,7 +148,7 @@ def save_plot(plot, plot_name, station):
 
         plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".svg"))
 
-        logger.debug(f"Saved plot {plot_name} for station {station} as png file.")
+        logger.debug(f"Saved plot {plot_name} for station {station} as svg file.")
     except Exception as e:
         logger.error(f"Saving plot {plot_name} failed.")
         logger.error(e)
