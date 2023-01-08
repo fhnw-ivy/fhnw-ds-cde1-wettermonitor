@@ -53,7 +53,7 @@ The startup of the weather monitor may take several minutes. A loading screen is
 After the startup, the dashboard is displayed in the browser.
 
 In the top left corner the 'Intro' button can be used to start the intro. The intro shows the functionality of the weather monitor in a hands-on way.
-![Intro](images/intro.gif)
+![Intro](images/Intro.gif)
 
 In the background, the weather monitor is collecting data from the different weather stations periodically. The data is then automatically displayed in the dashboard and plots as well as predictions are updated in the background.
 
