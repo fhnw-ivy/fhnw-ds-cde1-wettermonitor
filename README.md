@@ -5,28 +5,21 @@ Data engineering challenge weather monitor for water sports enthusiasts. The wea
 
 ---
 
-## Tested and developed on
-The weather monitor was tested and developed with the following environment:
-
-- Raspberry Pi 4 Model B
-- Raspberry Pi OS (64-bit, with desktop)
-   - Release date: September 22nd 2022
-   - Kernel version: 5.15
-   - Debian version: 11 (bullseye)
-- 32 GB Micro SD-Karte
-- Waveshare Display 10.1 (HDMI)
-
 ## Prerequisites
 Following software / hardware is required to set up or run the weather monitor:
 
+- Raspberry Pi 4 Model B
 - Peripherals (Keyboard, Monitor)
-- Raspberry Pi OS (64-bit, with desktop)
 - Power supply
 - Micro SD-Card (32 GB)
-- Internet connection
+- Internet connection (WiFi or Ethernet)
 
 ## Installation
-1. Connect the Micro SD card to your computer and flash the Raspberry Pi OS (64-bit, with desktop) to the Micro SD card using Raspberry Pi Imager. 
+The installation process was already done beforehand, however, perhaps there may be a desire to set up the device again. Here is a step-by-step guide to set up the weather monitor:
+
+> **Disclaimer:** While the setup is straight forward, it is not trivial. It requires some basic knowledge of Linux and the command line. If you are not familiar with Linux, you may want to contact us or someone else who is familiar with Linux.
+
+1. Connect the Micro SD card to your computer and flash the Raspberry Pi OS (64-bit, with desktop) to the Micro SD card using Raspberry Pi Imager. Here is a simple step by step guide to do this:
    1. Download the latest version of Raspberry Pi Imager from the [official website](https://www.raspberrypi.org/software/). 
    2. Documentation on how to use Raspberry Pi Imager can be found [here](https://www.raspberrypi.com/documentation/computers/getting-started.html#using-raspberry-pi-imager).
 2. Connect keyboard and monitor to the Raspberry Pi. (This can be skipped if you are using the Raspberry Pi headless and have configured the WiFi connection in step 1 through the Raspberry Pi Imager)
@@ -52,37 +45,33 @@ Following software / hardware is required to set up or run the weather monitor:
 
 From now on the weather monitor will start automatically on every boot.
 
-The installation script will install the following services and applications:
-- [Docker](https://www.docker.com/) 
-- [Docker Compose](https://docs.docker.com/compose/)
-- [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) (Time series database as Docker container)
-- Weather Monitor (Docker container with autostart script that opens the dashboard in the browser on boot)
-- [Watchtower](https://containrrr.dev/watchtower/) (Service to automatically update Docker containers as Docker container)
-
-The services and applications restart automatically after a reboot.
-
 ## Usage
-The startup of the weather monitor can take several minutes. A loading screen is displayed during this time.
+The startup of the weather monitor may take several minutes. A loading screen is displayed during this time.
 
 ![Loading Screen](images/loading_screen.gif)
 
 After the startup, the dashboard is displayed in the browser.
 
 In the top left corner the 'Intro' button can be used to start the intro. The intro shows the functionality of the weather monitor in a hands-on way.
+![Intro](images/Intro.gif)
 
 In the background, the weather monitor is collecting data from the different weather stations periodically. The data is then automatically displayed in the dashboard and plots as well as predictions are updated in the background.
 
 ### User Interface
-The dashboard shows the current weather data for a specific weather station. The weather station can be selected in the top left corner of the dashboard.
 ![Dashboard](images/dashboard.png)
 
-The dashboard provides you with not only the current weather data, but also with a wind forecast for the next hour. The wind forecast is based on the current weather data and a machine learning model. The machine learning model was trained with historical weather data from the weather stations. The historical weather data was collected over a period of 3 years. The machine learning model was trained with the historical weather data and is now used to predict the wind speed and wind direction for the next hour.
+The dashboard shows the current weather data for a specific weather station. The weather station can be selected in the top left corner of the dashboard, by clicking on the weather station name. 
+![Dashboard Station Selection](images/dashboard_station_selection.png)
+
+The dashboard provides you with not only the current weather data, but also with a wind forecast for the next hour. The wind forecast is based on the current weather data and a machine learning model (KNN). 
 
 Besides the wind data, the dashboards includes a slider with different plots for the weather data of the past 24 hours. Each plot is clickable and opens a detailed and larger view of the plot in order to dig deeper into the data.
+![Detailed Plot](images/detailed_plot.png)
 
-A guided tour through the dashboard can be started by clicking on the 'Intro' button in the top left corner of the dashboard.
+---
 
 ## Q&A
+
 ### How can I change or reconnect the Wi-Fi?
 Documentation on how to change or reconnect the Wi-Fi on the Raspberry Pi can be found [here](https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-networking).
 
@@ -108,6 +97,17 @@ sudo docker-compose pull
 
 ### What if my screen is flickering or nothing is displayed?
 Read the section [How can I restart the weather monitor?](#how-can-i-restart-the-weather-monitor) and use the alternative method to restart the weather monitor.
+
+### I can't see the dashboard in the browser. What can I do?
+Following steps can be taken to solve this issue:
+1. Check if the Raspberry Pi is connected to the internet (WiFi or Ethernet). Check the section [How can I change or reconnect the Wi-Fi?](#how-can-i-change-or-reconnect-the-wi-fi) for more information.
+2. Reboot the Raspberry Pi. Read the section [How can I restart the weather monitor?](#how-can-i-restart-the-weather-monitor) for more information.
+3. If the issue still persists, contact us or reboot the Raspberry Pi again.
+
+### The Raspberry Pi is connected to the internet, but the weather monitor is showing it is offline. What can I do?
+This may be due to errors while retrieving data. It usually resolves itself after a few minutes. 
+
+If the issue still persists, contact us or reboot the Raspberry Pi. Read the section [How can I restart the weather monitor?](#how-can-i-restart-the-weather-monitor) for more information.
 
 ## Known Issues
 ### Screen flickering
