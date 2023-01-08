@@ -154,8 +154,8 @@ The matching container name will be listed in the `NAMES` column of the containe
 
 If you're running the weather monitor in development mode and with Python, the logs can be viewed in the execution terminal.
 
-# Code documentation
-The code is documented using docstrings. The docstrings are written in [reStructuredText](https://docutils.sourceforge.io/rst.html) format. The docstrings are used to generate the documentation using [Sphinx](https://www.sphinx-doc.org/en/master/).
+# Code Documentation
+The code is documented using docstrings directly in the code.
 
 # Accessing the application
 The dashboard can be locally accessed through the following URL: http://localhost:6540
@@ -197,7 +197,7 @@ If further development is done on the application, the Docker image has to be re
 
 With a registry change, the `docker-compose.yml` file has to be updated to use the new registry. The `image` option has to be updated to use the new registry.
 
-# How can I add a new weather station?
+# Adding new stations
 The weather monitor can be extended to support new weather stations. The following steps have to be done to add a new weather station:
 
 1. Add the new weather station identifier (e.g. 'mythenquai') to the `stations` list within the `Config` class in the `src/weather_data.py` file.
@@ -208,6 +208,23 @@ The weather monitor can be extended to support new weather stations. The followi
 If the data from the new data source and station is successfully fetched and stored in the InfluxDB, the weather monitor will automatically generate a new prediction and plot for the new weather station. The new weather station will also be available in the dashboard.
 
 > **Note**: The weather monitor will only generate a new prediction and plot if the data for the new weather station is available in the InfluxDB. This means that the weather monitor will not generate a new prediction and plot for the new weather station if the data with the needed variables for the respective operation and new weather station is not available in the InfluxDB.
+
+# Adding new plots
+The weather monitor can be extended to support new plots. The following steps have to be done to add a new plot:
+1. Create a function that generate the plot in the `src/plotting.py` file.
+2. Save the plot with the help of the ```save_plot()``` function in the `src/plotting.py` file.
+3. Add the new plot identifier (e.g. 'wind_speed_avg_30h') to the list within the `get_plots()` function in the `src/plotting.py` file.
+4. Add the function call of the newly created function to the `generate_plots()` function in the `src/plotting.py` file.
+
+After that, the weather monitor will automatically generate the new plot and make it available in the dashboard.
+
+# Adding new measurements to the dashboard
+The weather monitor can be extended to support new measurements. The following steps have to be done to add a new measurement:
+
+1. Add the measurement identifier (e.g. 'wind_speed_avg_30h') matching with the corresponding field in the InfluxDB to the `show_current` list in the `src/app.py` file.
+2. Add the unit of the newly added measurement to the `unit_mapping` dictionary in the `src/weather_repositor.py` file.
+
+After that, the weather monitor will automatically show the new measurement on the dashboard.
 
 # Shutdown
 The following command can be used to shut down the weather monitor in development mode (Docker):
