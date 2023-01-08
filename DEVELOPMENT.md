@@ -208,6 +208,49 @@ If the data from the new data source and station is successfully fetched and sto
 
 > **Note**: The weather monitor will only generate a new prediction and plot if the data for the new weather station is available in the InfluxDB. This means that the weather monitor will not generate a new prediction and plot for the new weather station if the data with the needed variables for the respective operation and new weather station is not available in the InfluxDB.
 
+# Predictions
+Currently, the application predicts the **wind speed** (m/s) and the **wind direction** (°) in a [K-nearest neighbor model](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsRegressor.html) which was specifically trained on the pre-existing data from the [Tecdottir API](https://tecdottir.herokuapp.com/docs/) which provides data from both **Mythenquai** and **Tiefenbrunnen**. 
+
+As already shown in the [Project Structure](/DEVELOPMENT.md/#project-structure), there is a **prediction** directory in which everything about the weather prediction model can be accessed and modified.
+
+The input data, which is used for training, consists of two separate CSV files (one for each station):
+- messwerte_mythenquai_2007-2021.csv
+- messwerte_tiefenbrunnen_2007-2021.csv
+
+The model was trained on data from the timespan of the year 2007 until 2021. To have as much data, to rely on, as possible, the dataset was concatenated from both stations into one single dataset, tough, the source (station) was kept as an input feature through [label encoding](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). 
+
+## Handling of NA values
+The volume of NA values does not significantly change the rest size of the input data which is why we just dropped rows that had NA values. Through that, still 1516655 rows persist; That is 5260 Days of data per station which seems to be enough for this use case.
+
+## List of features
+To predict the **wind speed** and **wind direction** we relied on following attributes:
+- Station
+- Air Temperature from 10min before
+- Wind Speed Average from 10min before
+- Wind Direction from 10min before
+- Current Day
+- Current Month
+- Current Year
+- Current Wind Speed Average *(Goal variable)*
+- Current Wind Direction *(Goal variable)*
+
+As the list already hints, two output variables were chosen. To predict two variables from one model SciKit Learn's [MultiOutputRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html) was used. 
+
+> **Note:** Since the target variables are numerical and thus continuous, the regression variant of the KNN algorithm is used.
+
+## Measuring Accuracy
+SciKit Learn's Machine Learning algorithms provide a `score()` function to each fitted model. Through calling `model.fit().score()` we measured an accuracy of about 70% throughout our model. This value is calculated by dividing the correctly predicted values by all predicted values in the training set.
+
+By using the [Features list](/DEVELOPMENT.md/#list-of-features) above we found that those features provide the best accuracy while training the model in a timely manner.
+
+## Implementation into production
+To use the trained model in the application the package [Pickle](https://docs.python.org/3/library/pickle.html) was used. Pickle dumps a *pkl* file onto the Filesystem which then can be used with `pickle.load(open('model.pkl', 'rb')).predict(input_variables)` to predict future measurements based on a persisted model.
+
+Since the model with over 1.5M rows of input data is too large to keep track of in most versioning systems, an alternative flow was implemented when retraining a new model:
+1. Upload the model to a cloud provider (e.g. Google Drive, Dropbox or AWS)
+2. Update the [model downloading bash script](/download_model.sh) with your own choice of cloud reference to the uploaded model
+3. Restart the host (in this case the Raspberry Pi) *this will refetch the updated model*
+
 # Shutdown
 The following command can be used to shut down the weather monitor in development mode (Docker):
 ```bash
