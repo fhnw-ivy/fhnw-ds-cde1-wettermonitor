@@ -61,11 +61,14 @@ In the background, the weather monitor is collecting data from the different wea
 ![Dashboard](images/dashboard.png)
 
 The dashboard shows the current weather data for a specific weather station. The weather station can be selected in the top left corner of the dashboard, by clicking on the weather station name. 
-![Dashboard station selection](images/dashboard_select_station.png)
+![Dashboard Station Selection](images/dashboard_station_selection.png)
 
 The dashboard provides you with not only the current weather data, but also with a wind forecast for the next hour. The wind forecast is based on the current weather data and a machine learning model (KNN). 
 
 Besides the wind data, the dashboards includes a slider with different plots for the weather data of the past 24 hours. Each plot is clickable and opens a detailed and larger view of the plot in order to dig deeper into the data.
+![Detailed Plot](images/detailed_plot.png)
+
+---
 
 ## Q&A
 
