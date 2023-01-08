@@ -68,19 +68,19 @@ The startup of the weather monitor can take several minutes. A loading screen is
 
 After the startup, the dashboard is displayed in the browser.
 
-In the top left corner the 'Start Intro' button can be used to start the intro. The intro shows the functionality of the weather monitor in a hands-on way.
+In the top left corner the 'Intro' button can be used to start the intro. The intro shows the functionality of the weather monitor in a hands-on way.
 
 In the background, the weather monitor is collecting data from the different weather stations periodically. The data is then automatically displayed in the dashboard and plots as well as predictions are updated in the background.
 
-### Dashboard
+### User Interface
 The dashboard shows the current weather data for a specific weather station. The weather station can be selected in the top left corner of the dashboard.
 ![Dashboard](images/dashboard.png)
 
-### Plots
+The dashboard provides you with not only the current weather data, but also with a wind forecast for the next hour. The wind forecast is based on the current weather data and a machine learning model. The machine learning model was trained with historical weather data from the weather stations. The historical weather data was collected over a period of 3 years. The machine learning model was trained with the historical weather data and is now used to predict the wind speed and wind direction for the next hour.
 
+Besides the wind data, the dashboards includes a slider with different plots for the weather data of the past 24 hours. Each plot is clickable and opens a detailed and larger view of the plot in order to dig deeper into the data.
 
-### Predictions
-
+A guided tour through the dashboard can be started by clicking on the 'Intro' button in the top left corner of the dashboard.
 
 ## Q&A
 ### How can I change or reconnect the Wi-Fi?
@@ -108,6 +108,14 @@ sudo docker-compose pull
 
 ### What if my screen is flickering or nothing is displayed?
 Read the section [How can I restart the weather monitor?](#how-can-i-restart-the-weather-monitor) and use the alternative method to restart the weather monitor.
+
+## Known Issues
+### Screen flickering
+If the screen is flickering, try to restart the weather monitor. If the screen is still flickering, try to use a different HDMI cable.
+
+It is suspected that the screen flickering is caused by the power supply. If you are using a power supply with a lower wattage, try to use a power supply with a higher wattage. This might solve the issue.
+
+> **Caution**: Be careful when using a power supply with a higher wattage. Using a power supply with a higher wattage might damage the Raspberry Pi.
 
 ## Resources
 The data for the weather monitor is provided by the following services of the City of Zurich:
