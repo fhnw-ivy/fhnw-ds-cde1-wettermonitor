@@ -1,6 +1,18 @@
-# Project structure
+# Development Environment
+The weather monitor was tested and developed with the following environment:
 
+- Raspberry Pi 4 Model B
+- Raspberry Pi OS (64-bit, with desktop)
+   - Release date: September 22nd 2022
+   - Kernel version: 5.15
+   - Debian version: 11 (bullseye)
+- 32 GB Micro SD-Karte
+- [Waveshare Display 10.1](https://www.waveshare.com/wiki/10.1inch_HDMI_LCD_(B))
+
+# Project Structure
 The project is structured as follows:
+
+# TODO
 
 ```bash
 .
@@ -49,6 +61,33 @@ The project is structured as follows:
     ├── weather_data.py # Database and API communication related functions
     └── weather_repository.py # Management of data and query related functions
 ```
+
+## weather_data.py
+The `weather_data.py` file contains functions to communicate with the API and the database. The API is queried to get the latest weather data and the database is queried to get the weather data for the plots and the prediction.
+
+This file was provided by the project owner and was slightly modified in order to match the use case. These modifications include the following:
+
+### execute_query function
+The `execute_query` function is used to execute a query on the database. It takes the query as a parameter and returns the result of the query.
+
+The query tries to catch any exception that might occur and returns `None` if an exception occurs.
+
+### Timestamps
+The data structure returned by the database client, includes the timestamp in UTC format. The timestamps are converted to the local timezone of the user in order to display the correct time.
+
+## install.sh
+
+The installation script is used to install the weather monitor. It is a convenience script that installs the weather monitor and all its dependencies.
+
+The installation script will install the following services and applications:
+- [Docker](https://www.docker.com/) 
+- [Docker Compose](https://docs.docker.com/compose/)
+- [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) (Time series database as Docker container)
+- Weather Monitor (Docker container with autostart script that opens the dashboard in the browser on boot)
+- [Watchtower](https://containrrr.dev/watchtower/) (Service to automatically update Docker containers as Docker container)
+
+The services and applications restart automatically after a reboot.
+
 
 # Tech stack
 The weather monitor is built with the following technologies:
@@ -177,13 +216,19 @@ docker-compose -f docker-compose-dev.yml down
 
 If you're running the weather monitor in development mode and with Python, the weather monitor can be shut down by pressing `CTRL+C` in the execution terminal.
 
-# Known issues
+# Known Issues
 - Running the application outside Docker on a Windows machine is not supported. The application can be run using WSL on Windows.
   - This issue is related to the saving of plots on a Windows file system. The application will not be able to save the plots on a Windows file system. See function `save_plot` in `src/plotting.py`.
-- 
 
-# Future roadmap
+# Improvements
+The current state of the weather monitor is still a proof of concept. The following improvements can be made to the weather monitor:
+- The weather monitor can be extended to support more weather stations.
+- Combination of the weather stations can be used to improve the prediction accuracy. Currently, no overall dashboard or prediction is available which summarizes the weather data from all weather stations. This may be a desired feature of clients.
+- Possibility of customizing the dashboard. Currently, the dashboard is not customizable. Customization of the dashboard may include the possibility to add or remove weather stations from the dashboard based on the client's location or adding custom plots based on measurements from the weather stations.
+
+# Future Roadmap
 - [ ] Add more stations
-- [ ] Add more plots
+- [ ] Add a summary view of all stations
+- [ ] Add customizable dashboard and plots
 - [ ] Artificial intelligence to predict the weather
-- [ ] Add more data sources
+- [ ] Add more data sources (e.g. weather radar, weather satellites, etc.)
