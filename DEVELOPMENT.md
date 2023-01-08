@@ -209,6 +209,23 @@ If the data from the new data source and station is successfully fetched and sto
 
 > **Note**: The weather monitor will only generate a new prediction and plot if the data for the new weather station is available in the InfluxDB. This means that the weather monitor will not generate a new prediction and plot for the new weather station if the data with the needed variables for the respective operation and new weather station is not available in the InfluxDB.
 
+# Adding new plots
+The weather monitor can be extended to support new plots. The following steps have to be done to add a new plot:
+1. Create a function that generate the plot in the `src/plotting.py` file.
+2. Save the plot with the help of the ```save_plot()``` function in the `src/plotting.py` file.
+3. Add the new plot identifier (e.g. 'wind_speed_avg_30h') to the list within the `get_plots()` function in the `src/plotting.py` file.
+4. Add the function call of the newly created function to the `generate_plots()` function in the `src/plotting.py` file.
+
+After that, the weather monitor will automatically generate the new plot and make it available in the dashboard.
+
+# Adding new measurements to the dashboard
+The weather monitor can be extended to support new measurements. The following steps have to be done to add a new measurement:
+
+1. Add the measurement identifier (e.g. 'wind_speed_avg_30h') matching with the corresponding field in the InfluxDB to the `show_current` list in the `src/app.py` file.
+2. Add the unit of the newly added measurement to the `unit_mapping` dictionary in the `src/weather_repositor.py` file.
+
+After that, the weather monitor will automatically show the new measurement on the dashboard.
+
 # Predictions
 Currently, the application predicts the **wind speed** (m/s) and the **wind direction** (°) in a [K-nearest neighbor model](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsRegressor.html) which was specifically trained on the pre-existing data from the [Tecdottir API](https://tecdottir.herokuapp.com/docs/) which provides data from both **Mythenquai** and **Tiefenbrunnen**. 
 
@@ -237,7 +254,7 @@ To predict the **wind speed** and **wind direction** we relied on following attr
 
 As the list already hints, two output variables were chosen. To predict two variables from one model SciKit Learn's [MultiOutputRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html) was used. 
 
-> **Note:** Since the target variables are numerical and thus continuous, the regression variant of the KNN algorithm is used.
+> **Note**: Since the target variables are numerical and thus continuous, the regression variant of the KNN algorithm is used.
 
 ## Measuring Accuracy
 SciKit Learn's Machine Learning algorithms provide a `score()` function to each fitted model. Through calling `model.fit().score()` we measured an accuracy of about 70% throughout our model. This value is calculated by dividing the correctly predicted values by all predicted values in the training set.
@@ -251,23 +268,6 @@ Since the model with over 1.5M rows of input data is too large to keep track of 
 1. Upload the model to a cloud provider (e.g. Google Drive, Dropbox or AWS)
 2. Update the [model downloading bash script](/download_model.sh) with your own choice of cloud reference to the uploaded model
 3. Restart the host (in this case the Raspberry Pi) *this will refetch the updated model*
-
-# Adding new plots
-The weather monitor can be extended to support new plots. The following steps have to be done to add a new plot:
-1. Create a function that generate the plot in the `src/plotting.py` file.
-2. Save the plot with the help of the ```save_plot()``` function in the `src/plotting.py` file.
-3. Add the new plot identifier (e.g. 'wind_speed_avg_30h') to the list within the `get_plots()` function in the `src/plotting.py` file.
-4. Add the function call of the newly created function to the `generate_plots()` function in the `src/plotting.py` file.
-
-After that, the weather monitor will automatically generate the new plot and make it available in the dashboard.
-
-# Adding new measurements to the dashboard
-The weather monitor can be extended to support new measurements. The following steps have to be done to add a new measurement:
-
-1. Add the measurement identifier (e.g. 'wind_speed_avg_30h') matching with the corresponding field in the InfluxDB to the `show_current` list in the `src/app.py` file.
-2. Add the unit of the newly added measurement to the `unit_mapping` dictionary in the `src/weather_repositor.py` file.
-
-After that, the weather monitor will automatically show the new measurement on the dashboard.
 
 # Shutdown
 The following command can be used to shut down the weather monitor in development mode (Docker):
