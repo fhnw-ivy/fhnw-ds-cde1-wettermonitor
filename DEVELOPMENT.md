@@ -1,3 +1,34 @@
+<!-- TOC -->
+* [Development Environment](#development-environment)
+* [Project Structure](#project-structure)
+  * [weather_data.py](#weatherdatapy)
+  * [install.sh](#installsh)
+* [Tech stack](#tech-stack)
+* [Environment](#environment)
+  * [Run in development mode (Docker)](#run-in-development-mode--docker-)
+  * [Run in development mode (Python)](#run-in-development-mode--python-)
+* [Logs](#logs)
+* [Code Documentation](#code-documentation)
+* [Accessing the application](#accessing-the-application)
+* [Configuration](#configuration)
+* [Updating the application](#updating-the-application)
+* [Adding new stations](#adding-new-stations)
+* [Adding new plots](#adding-new-plots)
+* [Adding new measurements to the dashboard](#adding-new-measurements-to-the-dashboard)
+* [Predictions](#predictions)
+  * [Handling of NA values](#handling-of-na-values)
+  * [List of features](#list-of-features)
+  * [Measuring Accuracy](#measuring-accuracy)
+  * [Implementation into production](#implementation-into-production)
+* [Shutdown](#shutdown)
+* [Known Issues](#known-issues)
+* [Improvements](#improvements)
+* [Future Roadmap](#future-roadmap)
+<!-- TOC -->
+
+
+---
+
 # Development Environment
 The weather monitor was tested and developed with the following environment:
 

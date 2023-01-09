@@ -5,6 +5,26 @@ Data engineering challenge weather monitor for water sports enthusiasts. The wea
 
 ---
 
+<!-- TOC -->
+* [fhnw-ds-cde1-wettermonitor](#fhnw-ds-cde1-wettermonitor)
+  * [Prerequisites](#prerequisites)
+  * [Installation](#installation)
+  * [Usage](#usage)
+    * [User Interface](#user-interface)
+  * [Q&A](#qa)
+    * [How can I change or reconnect the Wi-Fi?](#how-can-i-change-or-reconnect-the-wi-fi)
+    * [Can I use the weather monitor in fullscreen mode?](#can-i-use-the-weather-monitor-in-fullscreen-mode)
+    * [How can I restart the weather monitor?](#how-can-i-restart-the-weather-monitor)
+    * [How can I update the weather monitor?](#how-can-i-update-the-weather-monitor)
+    * [What if my screen is flickering or nothing is displayed?](#what-if-my-screen-is-flickering-or-nothing-is-displayed)
+    * [I can't see the dashboard in the browser. What can I do?](#i-cant-see-the-dashboard-in-the-browser-what-can-i-do)
+    * [The Raspberry Pi is connected to the internet, but the weather monitor is showing it is offline. What can I do?](#the-raspberry-pi-is-connected-to-the-internet-but-the-weather-monitor-is-showing-it-is-offline-what-can-i-do)
+  * [Known Issues](#known-issues)
+    * [Screen flickering](#screen-flickering)
+  * [Resources](#resources)
+<!-- TOC -->
+
+---
 ## Prerequisites
 Following software / hardware is required to set up or run the weather monitor:
 
