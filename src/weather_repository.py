@@ -134,7 +134,7 @@ class WeatherQuery:
 
 def download_latest_csv_files(station: str):
     """
-    Downloads the latest CSV files from the weather station if the files are not already downloaded or if the files are older than a week.
+    Downloads the latest CSV files from the weather station. If the download files, a fallback CSV file is used.
     Args:
         station: The station to download the CSV files for.
 
@@ -143,19 +143,19 @@ def download_latest_csv_files(station: str):
     # Template for the CSV file paths
     file_name = f"./csv/messwerte_{station}.csv"
 
-    one_week_in_seconds = 60 * 60 * 24 * 7 # 60 seconds * 60 minutes * 24 hours * 7 days
-    if not os.path.exists(file_name) or os.path.getmtime(file_name) < time.time() - one_week_in_seconds:
-        logger.info(f"Downloading latest CSV file for station {station}..")
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+    logger.info(f"Downloading latest CSV file for station {station}..")
+    os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
-        url = f"https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen/download/messwerte_{station}_{datetime.datetime.now().year}.csv"
-        r = requests.get(url, allow_redirects=True)
+    url = f"https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen/download/messwerte_{station}_{datetime.datetime.now().year}.csv"
+    r = requests.get(url, allow_redirects=True)
+
+    if r.status_code == 200 and r.headers['Content-Type'] == 'text/csv':
         open(file_name, 'wb').write(r.content)
-
-        logger.info("Download latest CSV files finished for " + station)
+        logger.info(f"Downloaded latest CSV file for station {station} to {file_name}")
     else:
-        logger.info(f"CSV file for station {station} is up to date.")
-
+        logger.warning(f"Could not download latest CSV file for station {station}.")
+        logger.warning(f"Status code: {r.status_code}")
+        logger.warning(f"Using fallback CSV file for station {station}..")
 
 def init() -> None:
     """
