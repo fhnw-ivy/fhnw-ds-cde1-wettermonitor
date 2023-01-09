@@ -2,6 +2,9 @@
 * [Development Environment](#development-environment)
 * [Project Structure](#project-structure)
   * [weather_data.py](#weatherdatapy)
+  * [Handling of timezones](#handling-of-timezones)
+  * [plotting.py](#plottingpy)
+  * [prediction.py](#predictionpy)
   * [install.sh](#installsh)
 * [Tech stack](#tech-stack)
 * [Environment](#environment)
@@ -9,6 +12,7 @@
   * [Run in development mode (Python)](#run-in-development-mode--python-)
 * [Logs](#logs)
 * [Code Documentation](#code-documentation)
+* [Unit Testing](#unit-testing)
 * [Accessing the application](#accessing-the-application)
 * [Configuration](#configuration)
 * [Updating the application](#updating-the-application)
@@ -25,7 +29,6 @@
 * [Improvements](#improvements)
 * [Future Roadmap](#future-roadmap)
 <!-- TOC -->
-
 
 ---
 
