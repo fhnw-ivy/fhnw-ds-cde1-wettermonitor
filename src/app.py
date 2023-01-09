@@ -46,6 +46,9 @@ def convert_to_datetime_string(dt):
     Returns: String representation of the datetime object
     """
 
+    if dt is None:
+        return "Never"
+
     if dt.date() == datetime.datetime.now().date():
         return dt.strftime("%H:%M")
     else:
@@ -134,39 +137,38 @@ def job_watcher():
 if __name__ == '__main__':
     threads = []
 
-    while not service_ready:
-        try:
-            # Flask
-            flask_thread = threading.Thread(
-                target=lambda: app.run(host='0.0.0.0', port=6540, debug=is_development, use_reloader=False,
-                                       threaded=True))
-            threads.append(flask_thread)
-            flask_thread.start()
+    try:
+        # Flask
+        flask_thread = threading.Thread(
+            target=lambda: app.run(host='0.0.0.0', port=6540, debug=is_development, use_reloader=False,
+                                   threaded=True))
+        threads.append(flask_thread)
+        flask_thread.start()
 
-            # Weather repository
-            wr.init()
+        # Weather repository
+        wr.init()
 
-            # Prediction
-            pred.init()
+        # Prediction
+        pred.init()
 
-            # Plotting
-            plt.init()
+        # Plotting
+        plt.init()
 
-            # Start periodic data read
-            periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
-            threads.append(periodic_read_thread)
-            periodic_read_thread.start()
+        # Start periodic data read
+        periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
+        threads.append(periodic_read_thread)
+        periodic_read_thread.start()
 
-            # Schedule health check
-            wr.health_check()
-            schedule.every(default_refresh_interval).seconds.do(wr.health_check)
+        # Schedule health check
+        wr.health_check()
+        schedule.every(default_refresh_interval).seconds.do(wr.health_check)
 
-            logger.info("Service is ready.")
-            service_ready = True
-        except Exception as e:
-            logger.error("Service init failed. Retrying in 3s...")
-            logger.error(e)
-            time.sleep(3)
+        logger.info("Service is ready.")
+        service_ready = True
 
-    job_watcher()
-    logger.info("Application finished.")
+        job_watcher()
+    except Exception as e:
+        logger.error("App crashed.")
+        logger.error(e)
+    finally:
+        logger.info("Application finished.")

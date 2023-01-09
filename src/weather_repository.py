@@ -38,6 +38,7 @@ class Measurement(enum.Enum):
 
 # Unit mapping for the different measurements that can be queried from the database.
 # The keys are the names of the columns in the database.
+# Units taken from https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen (Section: "Attribute")
 unit_mapping = {
     "air_temperature": "°C",
     "water_temperature": "°C",
@@ -47,7 +48,6 @@ unit_mapping = {
     "barometric_pressure_qfe": "hPa",
     "humidity": "%",
     "wind_direction": "°",
-    "wind_force_avg_10min": "bft", # Beaufort scale matching with https://www.tecson-data.ch/zurich/tiefenbrunnen/diagramme/diagramm.php?diag=windg_jahr.php
     "wind_gust_max_10min": "m/s",
     "wind_speed_avg_10min": "m/s",
     "windchill": "°C",
@@ -241,6 +241,8 @@ def run_query(query: WeatherQuery, convert_timezone=True, timezone="Europe/Zuric
         # Convert DF index to specified timezone if requested
         if df is not None and convert_timezone and timezone is not None:
             df.index = df.index.tz_convert(timezone)
+            
+        return df
     except Exception as e:
         logger.error("run_query failed.")
         logger.error(e)
