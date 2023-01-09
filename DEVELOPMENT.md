@@ -203,7 +203,8 @@ The code is documented using docstrings directly in the code.
 # Unit Testing
 The unit tests are made with the coverage package. The tests are located in the `src` folder. The tests are executed with the following command:
 ```bash
-coverage run -m unittest discover -s src -p "tests.py"
+cd src
+python python -m tests -v
 ```
 
 The tests are not covering all the code. The tests are only covering the code that is related to the query generation and some visualization code.
