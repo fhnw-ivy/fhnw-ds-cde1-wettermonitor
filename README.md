@@ -65,6 +65,8 @@ The installation process was already done beforehand, however, perhaps there may
 
 From now on the weather monitor will start automatically on every boot.
 
+In case the convenience script failed, a message will be displayed. In this case, you can try to rerun the script. If this does not work, contact us.
+
 ## Usage
 The startup of the weather monitor may take several minutes. A loading screen is displayed during this time.
 

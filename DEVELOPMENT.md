@@ -11,8 +11,10 @@
   * [Run in development mode (Docker)](#run-in-development-mode--docker-)
   * [Run in development mode (Python)](#run-in-development-mode--python-)
 * [Logs](#logs)
+* [Logging](#logging)
 * [Code Documentation](#code-documentation)
 * [Unit Testing](#unit-testing)
+* [CSV Import](#csv-import)
 * [Accessing the application](#accessing-the-application)
 * [Configuration](#configuration)
 * [Updating the application](#updating-the-application)
@@ -200,8 +202,15 @@ The matching container name will be listed in the `NAMES` column of the containe
 
 If you're running the weather monitor in development mode and with Python, the logs can be viewed in the execution terminal.
 
+# Logging
+The logging is done with the help of the [logging](https://docs.python.org/3/library/logging.html) module. The default logging level is `DEBUG`. The logging level can be changed by setting the level parameter in the `logging.basicConfig` function in the `src/app.py` file.
+
+Each file of the project that uses the logging module gets its own logger. The singleton logger is retrieved by using the `getLogger` function of the logging module. The logger name is per default "app".
+
 # Code Documentation
-The code is documented using docstrings directly in the code.
+The code is documented using docstrings directly in the code and partly using comments.
+
+Some specific parts of the code are also documented in this file you are currently reading.
 
 # Unit Testing
 The unit tests are made with the coverage package. The tests are located in the `src` folder. The tests are executed with the following command:
@@ -211,6 +220,18 @@ python python -m tests -v
 ```
 
 The tests are not covering all the code. The tests are only covering the code that is related to the query generation and some visualization code.
+
+# CSV Import
+The application relies on data that is provided in a CSV format. This enables a fast startup process without the need of requesting a larger amount of data over HTTP(S). 
+
+The CSV files are downloaded from the [Wetterstation Daten](https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen) and are stored in the `src/csv` folder.
+
+The CSV are provided for the import in the following order with the first entry being always available and the last entry being the one if the remote host is available:
+1. Per default a set of CSV files are versioned in the repository. This is done to make the application also usable if the remote host from where the CSV files are downloaded is not available.
+2. The CSV files are downloaded on build time using the `download_csv.sh` script.
+3. The CSV files are downloaded on run time within the initialization of the application. The function replaces the CSV from the layer above if the download is successful.
+
+This layered system ensures, that the loading time of the application is reasonably low (best case scenario) or historical data is available at all to import (worst case scenario).
 
 # Accessing the application
 The dashboard can be locally accessed through the following URL: http://localhost:6540
@@ -322,7 +343,10 @@ To use the trained model in the application the package [Pickle](https://docs.py
 Since the model with over 1.5M rows of input data is too large to keep track of in most versioning systems, an alternative flow was implemented when retraining a new model:
 1. Upload the model to a cloud provider (e.g. Google Drive, Dropbox or AWS)
 2. Update the [model downloading bash script](/download_model.sh) with your own choice of cloud reference to the uploaded model
-3. Restart the host (in this case the Raspberry Pi) *this will refetch the updated model*
+3. Build the Docker image and run the script during the build process. This will download the model from the cloud provider and persist it in the Docker image.
+4. Push the Docker image to a Docker registry (e.g. Docker Hub, AWS ECR or Google Container Registry)
+5. Update the [docker-compose.yml](/docker-compose.yml) file with the new Docker image reference
+6. Run `docker compose up -d` to update the running application with the new model
 
 # Shutdown
 The following command can be used to shut down the weather monitor in development mode (Docker):
