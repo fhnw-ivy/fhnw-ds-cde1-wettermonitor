@@ -13,8 +13,14 @@ from service_status import ServiceStatus
 
 logger = logging.getLogger("app")
 
+# Default config for the weather_data.py script
+config = wd.Config()
 
 class Measurement(enum.Enum):
+    """
+    Enum for the different measurements that can be queried from the database.
+    The enum values are the names of the columns in the database.
+    """
     Air_temp = "air_temperature"
     Water_temp = "water_temperature"
     Dew_point = "dew_point"
@@ -30,7 +36,8 @@ class Measurement(enum.Enum):
     Radiation = "global_radiation"
 
 
-
+# Unit mapping for the different measurements that can be queried from the database.
+# The keys are the names of the columns in the database.
 unit_mapping = {
     "air_temperature": "°C",
     "water_temperature": "°C",
@@ -40,16 +47,23 @@ unit_mapping = {
     "barometric_pressure_qfe": "hPa",
     "humidity": "%",
     "wind_direction": "°",
-    "wind_force_avg_10min": "Bft",
-    "wind_gust_max_10min": "Bft",
-    "wind_speed_avg_10min": "km/h",
+    "wind_force_avg_10min": "bft", # Beaufort scale matching with https://www.tecson-data.ch/zurich/tiefenbrunnen/diagramme/diagramm.php?diag=windg_jahr.php
+    "wind_gust_max_10min": "m/s",
+    "wind_speed_avg_10min": "m/s",
     "windchill": "°C",
     "global_radiation": "W/m²"
 }
 
-
 def get_unit(variable_name: str) -> str:
+    """
+    Returns the unit for the given variable name.
+    Args:
+        variable_name: The variable name to get the unit for. The variable name is the name of the column in the database.
+    Returns: The unit for the given variable name.
+    """
     return unit_mapping[variable_name]
+
+
 class WeatherQuery:
     def __init__(self, station: str, measurements: list[Measurement] = None, start_time: datetime = None,
                  stop_time: datetime = None):
@@ -59,23 +73,47 @@ class WeatherQuery:
         self.stop_time = stop_time
 
     def create_query_string(self):
+        """
+        Creates the query string for the query.
 
+        The measurement names are converted to the names of the columns in the database.
+
+        Per default the query will return the latest measurement for each measurement type if no start and stop time is given.
+        Otherwise, the query will return all measurements between the start and stop time.
+
+        Returns: The query string for the query.
+        """
         time_string = WeatherQuery.create_time_where_string(start_time=self.start_time, stop_time=self.stop_time)
         has_time = time_string is not None
 
         query = f'SELECT {WeatherQuery.create_measurements_string(self.measurements) if self.measurements is not None else "*"} ' \
                 f'FROM {self.station} ' \
-                f'{("WHERE " + time_string) if has_time else "ORDER BY time DESC"} ' \
-                f'{"LIMIT 1" if not has_time else ""}'
+                f'{("WHERE " + time_string) if has_time else "ORDER BY time DESC"}' \
+                f'{" LIMIT 1" if not has_time else ""}'
 
         return query
 
     @staticmethod
     def create_date_string(date: datetime) -> str:
+        """
+        Creates a date string for the query and given date.
+        Args:
+            date: The date to create the date string for.
+        Returns: The date string for the query and given date.
+        """
         return date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     @staticmethod
     def create_time_where_string(start_time: datetime, stop_time: datetime = None):
+        """
+        Creates the time where string for the query.
+        If only one of the function parameters is given, the time where string will only contain the parameter that is given.
+        Args:
+            start_time: The start time of the query. >= start_time
+            stop_time: The stop time of the query. <= stop_time
+
+        Returns: The time 'where' string for the query.
+        """
         if not stop_time and not start_time:
             return None
 
@@ -86,22 +124,27 @@ class WeatherQuery:
 
     @staticmethod
     def create_measurements_string(measurements: list[Measurement]):
+        """
+        Creates the measurement string for the query.
+        Args:
+            measurements: The measurements to create the measurement string for.
+        Returns: The measurement string for the query.
+        """
         return ','.join(str(x.value) for x in measurements)
-
-
-config = wd.Config()
-
 
 def download_latest_csv_files(station: str):
     """
-    Downloads the latest CSV files from the weather station.
+    Downloads the latest CSV files from the weather station if the files are not already downloaded or if the files are older than a week.
     Args:
         station: The station to download the CSV files for.
 
     Returns: None
     """
+    # Template for the CSV file paths
     file_name = f"./csv/messwerte_{station}.csv"
-    if not os.path.exists(file_name) or os.path.getmtime(file_name) < time.time() - 604800:
+
+    one_week_in_seconds = 60 * 60 * 24 * 7 # 60 seconds * 60 minutes * 24 hours * 7 days
+    if not os.path.exists(file_name) or os.path.getmtime(file_name) < time.time() - one_week_in_seconds:
         logger.info(f"Downloading latest CSV file for station {station}..")
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
@@ -115,6 +158,13 @@ def download_latest_csv_files(station: str):
 
 
 def init() -> None:
+    """
+    Initializes the database connection and creates the database if it does not exist.
+    Imports the CSV files into the database.
+    Checks if additional data can be fetched from the API.
+
+    Returns: None
+    """
     config.db_host = os.environ.get("INFLUXDB_HOST") if os.environ.get("INFLUXDB_HOST") else "localhost"
     config.debug = int(os.environ.get("INFLUXDB_PORT")) if os.environ.get("INFLUXDB_PORT") else 8086
     logger.debug(f"DB config: host {config.db_host}, port {config.db_port}")
@@ -124,6 +174,7 @@ def init() -> None:
 
     logger.debug("Starting CSV import..")
 
+    # Import CSV files for each station
     for station in config.stations:
         logger.info("Checking for latest CSV files started for " + station)
         try:
@@ -142,12 +193,19 @@ def init() -> None:
     logger.debug("CSV import finished.")
 
     logger.debug("Starting periodic read..")
-    # Ensure that the latest data is available before starting the service is ready
+    # Ensure that the latest data from the API is available before starting the service is ready
     wd.import_latest_data(config=config, periodic_read=False)
     logger.debug("Periodic read finished.")
 
 
 def import_latest_data_periodic() -> None:
+    """
+    Wrapper function for the periodic read of the latest data from the API of the weather_data.py script.
+    Updates the service status accordingly.
+    Restarts the periodic read if it fails.
+
+    Returns: None
+    """
     try:
         logger.info("Periodic read started.")
         ServiceStatus.is_live = True
@@ -165,20 +223,44 @@ def import_latest_data_periodic() -> None:
 
     import_latest_data_periodic()
 
-def run_query(query: WeatherQuery) -> DataFrame | None:
+def run_query(query: WeatherQuery, convert_timezone=True, timezone="Europe/Zurich") -> DataFrame | None:
+    """
+    Wrapper function for the query function of the weather_data.py script.
+    Converts the timezone of the result if passed as parameter.
+
+    Args:
+        query: The query object to run the query for.
+        convert_timezone: Whether to convert the timezone of the data or not.
+        timezone: The timezone to convert the data to.
+
+    Returns: The result of the query as a DataFrame or None if the query failed.
+    """
     try:
-        return wd.execute_query(config=config, station=query.station, query=query.create_query_string())
+        df = wd.execute_query(config=config, station=query.station, query=query.create_query_string())
+
+        # Convert DF index to specified timezone if requested
+        if df is not None and convert_timezone and timezone is not None:
+            df.index = df.index.tz_convert(timezone)
     except Exception as e:
         logger.error("run_query failed.")
         logger.error(e)
 
-    pass
-
+    return None
 
 def get_stations():
+    """
+    Returns the stations that are available in the database.
+    Returns: The stations that are available in the database.
+    """
     return config.stations
 
 def health_check():
+    """
+    Runs a query on the database connection to check if the database is available and data can be retrieved.
+    Updated the service status accordingly.
+
+    Returns: Boolean indicating if the database is available.
+    """
     try:
         query = WeatherQuery(station=config.stations[0], measurements=[Measurement.Air_temp])
         data = run_query(query)

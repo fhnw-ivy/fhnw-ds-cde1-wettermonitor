@@ -61,7 +61,6 @@ class Config:
     historic_data_chunksize = 10000
     client = None
 
-
 def connect_db(config):
     """Connects to the database and initializes the client
 
@@ -96,11 +95,6 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
         logger.debug(f"Query: {query}")
         result = config.client.query(query, database=config.db_name)
         df = result.get(station, None)
-
-        # Convert dataframe index to zurich timezone
-        if df is not None:
-            df.index = df.index.tz_convert('Europe/Zurich')
-
         return df
 
     except Exception as e:

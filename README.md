@@ -110,9 +110,9 @@ sudo reboot
 Alternatively, you can disconnect the Raspberry Pi from the power supply, wait a few seconds and reconnect it to the power supply again. 
 
 ### How can I update the weather monitor?
-The weather monitor is usually **automatically updated**. If you want to update the weather monitor manually, use the following command:
+The weather monitor is usually **automatically updated**. If you want to update the weather monitor manually, use the following command inside the weather monitor directory (default: `/home/pi/fhnw-ds-cde1-wettermonitor`) on your Raspberry Pi:
 ```bash
-sudo docker-compose pull
+sudo docker compose pull
 ```
 
 ### What if my screen is flickering or nothing is displayed?

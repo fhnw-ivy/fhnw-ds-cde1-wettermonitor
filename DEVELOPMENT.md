@@ -81,6 +81,7 @@ The project is structured as follows:
     │   ├── plots.html # Plots slider subpage
     │   ├── prediction.html # Prediction subpage
     │   └── station.html # Station subpage
+    ├── tests.py # Unit tests
     ├── weather_data.py # Weather data functions. Fetches the weather data from the web and stores it in InfluxDB. Given by the project supervisor. Slightly modified, see below.
     └── weather_repository.py # Weather repository functions. Includes query logic that is passed to weather_data.py and used throughout the application.
 ```
@@ -92,8 +93,19 @@ This file was provided by the project owner and was slightly modified in order t
 - execute_query function 
   - The `execute_query` function is used to execute a query on the database. It takes the query as a parameter and returns the result of the query.
   - The query tries to catch any exception that might occur and returns `None` if an exception occurs.
-- Timestamps
-  - The data structure returned by the database client, includes the timestamp in UTC format. The timestamps are converted to the local timezone of the user in order to display the correct time.
+  - In this way, we can utilize the existing database connection and do not have to create a new connection for every query.
+
+## Handling of timezones
+  - The data structure returned by the database client, includes the timestamp in UTC format. 
+  - The timestamps are converted to the local timezone (default: Europe/Zurich) by default.
+  - The conversion is done within the `run_query()` function in `weather_repository.py`.
+  - The timezone is changed by default because the data is mostly used to visualize in the dashboard. The dashboard displays the data in the local timezone of the main customer (Zurich, Switzerland).
+
+## plotting.py
+The `plotting.py` file contains functions to generate plots using Plotly. The plots are saved as SVGs to the static folder. The SVGs are then embedded in the HTML templates.
+
+## prediction.py
+The `prediction.py` file contains functions to predict the weather. The prediction model is loaded from the `src` folder directly. The model is trained in the `weather_prediction.ipynb` notebook. The notebook is located in the `prediction` folder.
 
 ## install.sh
 The installation script is used to install the weather monitor. It is a convenience script that installs the weather monitor and all its dependencies.
@@ -150,7 +162,7 @@ The weather monitor can be run in development mode using the `docker-compose-dev
 
 The following command can be used to run the weather monitor in development mode:
 ```bash
-docker-compose -f docker-compose-dev.yml up -d --build --force-recreate --remove-orphans
+docker compose -f docker-compose-dev.yml up -d --build --force-recreate --remove-orphans
 ```
 
 ## Run in development mode (Python)
@@ -164,7 +176,7 @@ A minimum version of [Python 3.10](https://www.python.org/downloads/) is require
 > ```
 > 
 ```bash
-docker-compose -f docker-compose-dev.yml up -d influxdb
+docker compose -f docker-compose-dev.yml up -d influxdb
 python3 src/app.py
 ```
 
@@ -187,6 +199,14 @@ If you're running the weather monitor in development mode and with Python, the l
 
 # Code Documentation
 The code is documented using docstrings directly in the code.
+
+# Unit Testing
+The unit tests are made with the coverage package. The tests are located in the `src` folder. The tests are executed with the following command:
+```bash
+coverage run -m unittest discover -s src -p "tests.py"
+```
+
+The tests are not covering all the code. The tests are only covering the code that is related to the query generation and some visualization code.
 
 # Accessing the application
 The dashboard can be locally accessed through the following URL: http://localhost:6540
@@ -216,7 +236,7 @@ nano .env
 
 After that the docker stack has to be redeployed (if already running or not) using the following command:
 ```bash
-sudo docker-compose up -d
+sudo docker compose up -d
 ```
 
 # Updating the application
