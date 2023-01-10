@@ -17,18 +17,19 @@ def get_plots():
     """
     Returns a list of all plot names.
     """
-    return ['wind_speed', 'air_temperature', 'wind_direction']
+    return ['wind_speed_1d', 'wind_speed_7d', 'air_temperature_1d', 'air_temperature_7d', 'wind_direction']
 
-def generate_wind_speed_plot(station: str):
+def generate_wind_speed_plot(station: str, days_delta):
     """
     Generates a plot of the wind speed measurements for the given station. The plot also contains predictions for the next hour.
     Args:
         station: The station to generate the plot for.
+        days_delta: The number of days to go back in time.
 
     Returns: None
     """
 
-    start_time = datetime.datetime.now() - datetime.timedelta(days=1)
+    start_time = datetime.datetime.now() - datetime.timedelta(days=days_delta)
     stop_time = datetime.datetime.now()
 
     weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_gust_max_10min],
@@ -44,7 +45,7 @@ def generate_wind_speed_plot(station: str):
     plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines', name='Wind speed prediction (10min avg)')
 
     plot.update_layout(
-        title="Wind speed (10min avg)",
+        title="Wind speed (10min avg) last " + str(days_delta) + (" days" if days_delta > 1 else " day"),
         xaxis_title="Time",
         yaxis_title="Wind speed (m/s)"
     )
@@ -57,18 +58,19 @@ def generate_wind_speed_plot(station: str):
         x=0.01
     ))
 
-    save_plot(plot, "wind_speed", station)
+    save_plot(plot, f"wind_speed_{days_delta}d", station)
 
-def generate_air_temperature_plot(station: str):
+def generate_air_temperature_plot(station: str, days_delta):
     """
     Generates a plot of the air temperature for the given station.
     Args:
         station: The station to generate the plot for.
+        days_delta: The number of days to go back in time.
 
     Returns: None
     """
 
-    start_time = datetime.datetime.now() - datetime.timedelta(days=1)
+    start_time = datetime.datetime.now() - datetime.timedelta(days=days_delta)
     stop_time = datetime.datetime.now()
 
     weather_query = wr.WeatherQuery(station=station, measurements=[wr.Measurement.Air_temp],
@@ -79,13 +81,13 @@ def generate_air_temperature_plot(station: str):
     plot = px.line(weather_data, x=weather_data.index, y="air_temperature")
 
     plot.update_layout(
-        title="Air temperature",
+        title="Air temperature last " + str(days_delta) + (" days" if days_delta > 1 else " day"),
         xaxis_title="Time",
         yaxis_title="Temperature (C)",
     )
 
     plot.update_yaxes(range=[min(-5, weather_data["air_temperature"].min() - 3), max(5, weather_data["air_temperature"].max() + 3)])
-    save_plot(plot, "air_temperature", station)
+    save_plot(plot, f"air_temperature_{days_delta}d", station)
 
 def generate_wind_direction_plot(station: str):
     """
@@ -160,18 +162,21 @@ def generate_all_plots():
     Returns: None
     """
 
-    for station in wr.get_stations():
-        try:
-            generate_wind_speed_plot(station)
-        except Exception as e:
-            logger.error(f"Generating wind speed plot for station {station} failed.")
-            logger.error(e)
+    days_deltas = [1, 7]
 
-        try:
-            generate_air_temperature_plot(station)
-        except Exception as e:
-            logger.error(f"Generating air temperature plot for station {station} failed.")
-            logger.error(e)
+    for station in wr.get_stations():
+        for days_delta in days_deltas:
+            try:
+                generate_wind_speed_plot(station, days_delta)
+            except Exception as e:
+                logger.error(f"Generating wind speed plot for station {station} with {days_delta} days delta failed.")
+                logger.error(e)
+
+            try:
+                generate_air_temperature_plot(station, days_delta)
+            except Exception as e:
+                logger.error(f"Generating air temperature plot for station {station} with {days_delta} days delta failed.")
+                logger.error(e)
 
         try:
             generate_wind_direction_plot(station)
