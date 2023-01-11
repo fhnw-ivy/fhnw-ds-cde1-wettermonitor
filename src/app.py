@@ -25,7 +25,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger("app")
-logger.info("Starting app")
+logger.info("Starting app...")
 
 app = Flask(__name__)
 service_ready = False
@@ -144,24 +144,30 @@ if __name__ == '__main__':
                                    threaded=True))
         threads.append(flask_thread)
         flask_thread.start()
+        logger.debug("Flask thread started.")
 
         # Weather repository
         wr.init()
+        logger.debug("Weather repository initialized.")
 
         # Prediction
         pred.init()
+        logger.debug("Prediction initialized.")
 
         # Plotting
         plt.init()
+        logger.debug("Plotting initialized.")
 
         # Start periodic data read
         periodic_read_thread = threading.Thread(target=wr.import_latest_data_periodic)
         threads.append(periodic_read_thread)
         periodic_read_thread.start()
+        logger.debug("Periodic data read started.")
 
         # Schedule health check
         wr.health_check()
         schedule.every(default_refresh_interval).seconds.do(wr.health_check)
+        logger.debug("Health check scheduled.")
 
         logger.info("Service is ready.")
         service_ready = True
