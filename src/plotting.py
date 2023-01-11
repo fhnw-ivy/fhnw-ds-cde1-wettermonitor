@@ -45,7 +45,7 @@ def generate_wind_speed_plot(station: str, days_delta):
     plot.add_scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines', name='Wind speed prediction (10min avg)')
 
     plot.update_layout(
-        title="Wind speed (10min avg) last " + str(days_delta) + (" days" if days_delta > 1 else " day"),
+        title="Wind speed (10min avg) of the last " + ("24 hours" if days_delta == 1 else f"{days_delta} days"),
         xaxis_title="Time",
         yaxis_title="Wind speed (m/s)"
     )
@@ -81,7 +81,7 @@ def generate_air_temperature_plot(station: str, days_delta):
     plot = px.line(weather_data, x=weather_data.index, y="air_temperature")
 
     plot.update_layout(
-        title="Air temperature last " + str(days_delta) + (" days" if days_delta > 1 else " day"),
+        title="Air temperature last " + ("24 hours" if days_delta == 1 else f"{days_delta} days"),
         xaxis_title="Time",
         yaxis_title="Temperature (C)",
     )
@@ -112,7 +112,7 @@ def generate_wind_direction_plot(station: str):
     plot.add_scatter(x=list(predictions.keys()), y=list(x[1] for x in predictions.values()), mode='lines', name='Prediction')
 
     plot.update_layout(
-        title="Wind direction",
+        title="Wind direction of the last 24 hours",
         xaxis_title="Time",
         yaxis_title="Wind direction (degree)",
     )
