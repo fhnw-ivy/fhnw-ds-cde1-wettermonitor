@@ -1,5 +1,6 @@
 import datetime
 import os
+import random
 import threading
 import time
 
@@ -62,6 +63,12 @@ def get_sanitized_service_status():
     is_live, last_fetch = ServiceStatus.get_status()
     return [is_live, convert_to_datetime_string(last_fetch)]
 
+def get_shuffled_plots():
+    """
+    Returns a shuffled list of all plots in order to randomize the order of the plots shown in the slider on the dashboard
+    """
+    return random.sample(plt.get_plots(), len(plt.get_plots()))
+
 @app.before_request
 def before_request():
     """
@@ -115,13 +122,13 @@ def wetterstation(station):
             if isinstance(current_data[variable]["value"], float):
                 current_data[variable]["value"] = round(current_data[variable]["value"], 2)
 
-    return render_template(index_template, subpage="station", station=station, plot_list=plt.get_plots(), data=weather_data,
+    return render_template(index_template, subpage="station", station=station, plot_list=get_shuffled_plots(), data=weather_data,
                            prediction=prediction_data, station_list=wr.get_stations(), status=get_sanitized_service_status(),
                            refresh_interval=default_refresh_interval, current_list=current_data)
 
 @app.route("/weatherstation/<station>/plots/<plot_type>")
 def plot(station, plot_type):
-    return render_template(index_template, subpage="plot", station=station, plot_list=plt.get_plots(), station_list=wr.get_stations(), status=get_sanitized_service_status(),
+    return render_template(index_template, subpage="plot", station=station, plot_list=get_shuffled_plots(), station_list=wr.get_stations(), status=get_sanitized_service_status(),
                            refresh_interval=default_refresh_interval, plot_type=plot_type)
 
 def job_watcher():
