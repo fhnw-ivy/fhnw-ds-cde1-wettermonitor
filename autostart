@@ -2,4 +2,4 @@
 @pcmanfm --desktop --profile LXDE-pi
 #@xscreensaver -no-splash
 point-rpi
-@chromium-browser --start-fullscreen http://localhost:6540
+@chromium-browser --noerrors --disable-session-crashed-bubble --disable-infobars --start-fullscreen --incognito http://localhost:6540
