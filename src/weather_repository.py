@@ -6,7 +6,6 @@ import time
 from builtins import str
 
 import requests
-from pandas import DataFrame
 
 import weather_data as wd
 from service_status import ServiceStatus
@@ -54,7 +53,7 @@ unit_mapping = {
     "global_radiation": "W/m²"
 }
 
-def get_unit(variable_name: str) -> str:
+def get_unit(variable_name) -> str:
     """
     Returns the unit for the given variable name.
     Args:
@@ -65,8 +64,7 @@ def get_unit(variable_name: str) -> str:
 
 
 class WeatherQuery:
-    def __init__(self, station: str, measurements: list[Measurement] = None, start_time: datetime = None,
-                 stop_time: datetime = None):
+    def __init__(self, station, measurements = None, start_time = None, stop_time = None):
         self.station = station
         self.measurements = measurements
         self.start_time = start_time
@@ -74,16 +72,16 @@ class WeatherQuery:
 
     def create_query_string(self):
         """
-        Creates the query string for the query.
+        Creates the weather_query string for the weather_query.
 
         The measurement names are converted to the names of the columns in the database.
 
-        Per default the query will return the latest measurement for each measurement type if no start and stop time is given.
-        Otherwise, the query will return all measurements between the start and stop time.
+        Per default the weather_query will return the latest measurement for each measurement type if no start and stop time is given.
+        Otherwise, the weather_query will return all measurements between the start and stop time.
 
-        Returns: The query string for the query.
+        Returns: The weather_query string for the weather_query.
         """
-        time_string = WeatherQuery.create_time_where_string(start_time=self.start_time, stop_time=self.stop_time)
+        time_string = WeatherQuery.create_time_where_string(start_datetime=self.start_time, stop_datetime=self.stop_time)
         has_time = time_string is not None
 
         query = f'SELECT {WeatherQuery.create_measurements_string(self.measurements) if self.measurements is not None else "*"} ' \
@@ -94,45 +92,45 @@ class WeatherQuery:
         return query
 
     @staticmethod
-    def create_date_string(date: datetime) -> str:
+    def create_date_string(date) -> str:
         """
-        Creates a date string for the query and given date.
+        Creates a date string for the weather_query and given date.
         Args:
             date: The date to create the date string for.
-        Returns: The date string for the query and given date.
+        Returns: The date string for the weather_query and given date.
         """
         return date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     @staticmethod
-    def create_time_where_string(start_time: datetime, stop_time: datetime = None):
+    def create_time_where_string(start_datetime, stop_datetime):
         """
-        Creates the time where string for the query.
+        Creates the time where string for the weather_query.
         If only one of the function parameters is given, the time where string will only contain the parameter that is given.
         Args:
-            start_time: The start time of the query. >= start_time
-            stop_time: The stop time of the query. <= stop_time
+            start_datetime: The start time of the weather_query. >= start_time
+            stop_datetime: The stop time of the weather_query. <= stop_datetime
 
-        Returns: The time 'where' string for the query.
+        Returns: The time 'where' string for the weather_query.
         """
-        if not stop_time and not start_time:
+        if not stop_datetime and not start_datetime:
             return None
 
-        if not stop_time:
-            return f'time > now() - {WeatherQuery.create_date_string(start_time)}'
+        if not stop_datetime:
+            return f'time > now() - {WeatherQuery.create_date_string(start_datetime)}'
 
-        return f'time >= \'{WeatherQuery.create_date_string(start_time)}\' AND time <= \'{WeatherQuery.create_date_string(stop_time)}\''
+        return f'time >= \'{WeatherQuery.create_date_string(start_datetime)}\' AND time <= \'{WeatherQuery.create_date_string(stop_datetime)}\''
 
     @staticmethod
-    def create_measurements_string(measurements: list[Measurement]):
+    def create_measurements_string(measurements):
         """
-        Creates the measurement string for the query.
+        Creates the measurement string for the weather_query.
         Args:
             measurements: The measurements to create the measurement string for.
-        Returns: The measurement string for the query.
+        Returns: The measurement string for the weather_query.
         """
         return ','.join(str(x.value) for x in measurements)
 
-def download_latest_csv_files(station: str):
+def download_latest_csv_files(station):
     """
     Downloads the latest CSV files from the weather station. If the download files, a fallback CSV file is used.
     Args:
@@ -223,20 +221,20 @@ def import_latest_data_periodic() -> None:
 
     import_latest_data_periodic()
 
-def run_query(query: WeatherQuery, convert_timezone=True, timezone="Europe/Zurich") -> DataFrame | None:
+def run_query(weather_query, convert_timezone=True, timezone="Europe/Zurich"):
     """
-    Wrapper function for the query function of the weather_data.py script.
+    Wrapper function for the query_string function of the weather_data.py script.
     Converts the timezone of the result if passed as parameter.
 
     Args:
-        query: The query object to run the query for.
+        weather_query: The query_string object to run the query_string for.
         convert_timezone: Whether to convert the timezone of the data or not.
         timezone: The timezone to convert the data to.
 
-    Returns: The result of the query as a DataFrame or None if the query failed.
+    Returns: The result of the query_string as a DataFrame or None if the query_string failed.
     """
     try:
-        df = wd.execute_query(config=config, station=query.station, query=query.create_query_string())
+        df = wd.execute_query(config=config, station=weather_query.station, query_string=weather_query.create_query_string())
 
         # Convert DF index to specified timezone if requested
         if df is not None and convert_timezone and timezone is not None:
@@ -258,7 +256,7 @@ def get_stations():
 
 def health_check():
     """
-    Runs a query on the database connection to check if the database is available and data can be retrieved.
+    Runs a weather_query on the database connection to check if the database is available and data can be retrieved.
     Updated the service status accordingly.
 
     Returns: Boolean indicating if the database is available.

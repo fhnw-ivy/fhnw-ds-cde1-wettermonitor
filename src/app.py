@@ -37,22 +37,22 @@ default_plot_type = "wind_speed_with_predictions"
 show_current = ['air_temperature', 'water_temperature', 'barometric_pressure_qfe', 'humidity', 'windchill']
 
 
-def convert_to_datetime_string(dt):
+def convert_to_datetime_string(date):
     """
     Converts a datetime object to a string for the template
     Args:
-        dt: Datetime object
+        date: Datetime object
 
     Returns: String representation of the datetime object
     """
 
-    if dt is None:
+    if date is None:
         return "Never"
 
-    if dt.date() == datetime.datetime.now().date():
-        return dt.strftime("%H:%M")
+    if date.date() == datetime.datetime.now().date():
+        return date.strftime("%H:%M")
     else:
-        return dt.strftime("%d.%m.%Y %H:%M")
+        return date.strftime("%d.%m.%Y %H:%M")
 
 def get_sanitized_service_status():
     """
@@ -79,7 +79,7 @@ def index():
 
 
 @app.route("/weatherstation/<station>")
-def wetterstation(station: str):
+def wetterstation(station):
     # Dashboard data (Current weather)
     weather_data = pd.DataFrame()
     try:
@@ -120,7 +120,7 @@ def wetterstation(station: str):
                            refresh_interval=default_refresh_interval, current_list=current_data)
 
 @app.route("/weatherstation/<station>/plots/<plot_type>")
-def plot(station: str, plot_type: str):
+def plot(station, plot_type):
     return render_template(index_template, subpage="plot", station=station, plot_list=plt.get_plots(), station_list=wr.get_stations(), status=get_sanitized_service_status(),
                            refresh_interval=default_refresh_interval, plot_type=plot_type)
 

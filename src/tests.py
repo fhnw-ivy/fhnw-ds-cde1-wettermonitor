@@ -8,7 +8,7 @@ import weather_repository as wr
 class WeatherQueryTestCase(unittest.TestCase):
     def test_query_simple(self):
         """
-        Test that the query string is created correctly when no time is specified.
+        Test that the weather_query string is created correctly when no time is specified.
         """
         measurements = [wr.Measurement.Water_temp, wr.Measurement.Air_temp]
         query = wr.WeatherQuery(station="test", measurements=measurements)
@@ -16,7 +16,7 @@ class WeatherQueryTestCase(unittest.TestCase):
 
     def test_query_with_time(self):
         """
-        Test that the query string is created correctly when a time is specified.
+        Test that the weather_query string is created correctly when a time is specified.
         """
         measurements = [wr.Measurement.Water_temp, wr.Measurement.Air_temp]
         query = wr.WeatherQuery(station="test", measurements=measurements, start_time=datetime.datetime(2021, 1, 1, 0, 0, 0), stop_time=datetime.datetime(2021, 1, 1, 0, 0, 0))

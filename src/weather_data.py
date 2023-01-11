@@ -76,13 +76,13 @@ def connect_db(config):
         config.client.switch_database(config.db_name)
 
 
-def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame | None:
+def execute_query(config, station, query_string):
     """
-    Executes a given query related to a specific weather station that is within the config
+    Executes a given weather_query related to a specific weather station that is within the config
     Args:
         config: DB config
         station: Station from the weather config
-        query: Influx query string
+        query_string: Influx weather_query string
 
     Returns: None in case of error or empty set or pandas DataFrame with data
     """
@@ -92,13 +92,13 @@ def execute_query(config: Config, station: str, query: str) -> pandas.DataFrame 
         return None
 
     try:
-        logger.debug(f"Query: {query}")
-        result = config.client.query(query, database=config.db_name)
+        logger.debug(f"Query: {query_string}")
+        result = config.client.query(query_string, database=config.db_name)
         df = result.get(station, None)
         return df
 
     except Exception as e:
-        logger.error(f"Query '{query}' failed. Exception: {e}")
+        logger.error(f"Query '{query_string}' failed. Exception: {e}")
 
     return None
 
@@ -236,18 +236,18 @@ def __set_last_db_entry(config, station, entry):
 def __get_last_db_entry(config, station):
     last_entry = None
     if not config.stations_force_query_last_entry:
-        # speedup for Raspberry Pi - last entry query takes > 2 Sec.!
+        # speedup for Raspberry Pi - last entry weather_query takes > 2 Sec.!
         last_entry = config.stations_last_entries.get(station, None)
 
     if last_entry is None:
         try:
             # we are only interested in time, however need to provide any field
-            # to make query work
+            # to make weather_query work
             query = (f'SELECT air_temperature FROM {station} ORDER BY time '
                      f'DESC LIMIT 1')
             last_entry = config.client.query(query)
         except:
-            # There are influxDB versions which have an issue with above query
+            # There are influxDB versions which have an issue with above weather_query
             logger.error(
                 'An exception occurred while querying last entry from DB for ',
                 station, '. Try alternative approach.')
