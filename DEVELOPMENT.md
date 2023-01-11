@@ -4,8 +4,11 @@
   * [weather_data.py](#weatherdatapy)
   * [Handling of timezones](#handling-of-timezones)
   * [plotting.py](#plottingpy)
+    * [Adding additional metrics to the plots](#adding-additional-metrics-to-the-plots)
+    * [Resampling and Interpolation](#resampling-and-interpolation)
   * [prediction.py](#predictionpy)
   * [install.sh](#installsh)
+  * [autostart](#autostart)
 * [Tech stack](#tech-stack)
 * [Environment](#environment)
   * [Run in development mode (Docker)](#run-in-development-mode--docker-)
@@ -58,8 +61,9 @@ The project is structured as follows:
 ├── example.env # Example environment file. InfluxDB password is stored here
 ├── images # Images used in README.md
 │   ├── dashboard.png
+│   ├── dashboard_station_selection.png
+│   ├── detailed_plot.png
 │   ├── Intro.gif
-│   ├── Intro.mp4
 │   └── loading_screen.gif
 ├── install.sh # Convenience script to install the weather monitor
 ├── prediction # Prediction related files
@@ -88,7 +92,7 @@ The project is structured as follows:
     │   └── station.html # Station subpage
     ├── tests.py # Unit tests
     ├── weather_data.py # Weather data functions. Fetches the weather data from the web and stores it in InfluxDB. Given by the project supervisor. Slightly modified, see below.
-    └── weather_repository.py # Weather repository functions. Includes query logic that is passed to weather_data.py and used throughout the application.
+    └── weather_repository.py # Weather repository functions. Includes weather_query logic that is passed to weather_data.py and used throughout the application.
 ```
 
 ## weather_data.py
@@ -109,6 +113,27 @@ This file was provided by the project owner and was slightly modified in order t
 ## plotting.py
 The `plotting.py` file contains functions to generate plots using Plotly. The plots are saved as SVGs to the static folder. The SVGs are then embedded in the HTML templates.
 
+Some plots have the parameter `days_delta` which is used to specify the number of days to look back in the data and plot.
+
+Some plots also include the prediction values from the latest measurement on the plot. The prediction values are calculated using the `prediction.py` file.
+
+### Adding additional metrics to the plots
+The function `add_mean_min_max_to_plot()` in `plotting.py` is used to add the mean, min and max values to the plot. The function takes the plot as a parameter and returns the plot with the mean, min and max values added.
+
+The values are represented with their corresponding unit. The unit is defined in the `weather_repository.py` file.
+
+### Resampling and Interpolation
+If the days_delta parameter is set to a value greater than 1, the data is resampled. The resampling is done using the `resample()` function from Pandas and uses the `mean()` function.
+Per default the resampling happens on an hourly basis. This can be changed by changing the `resample_rule` parameter in the `resample_and_interpolate_data()` function.
+
+Read more on resampling [here](https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#resampling).
+
+The resampling is followed by an interpolation. The interpolation is done using the `interpolate()` function from Pandas and uses the `linear` method per default. This can be changed by changing the `interpolation_method` parameter in the `resample_and_interpolate_data()` function. 
+
+This is done because the resampling can lead to missing values in the data. The interpolation fills these missing values.
+
+Read more in the documentation to the [interpolate()](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.interpolate.html) function.
+
 ## prediction.py
 The `prediction.py` file contains functions to predict the weather. The prediction model is loaded from the `src` folder directly. The model is trained in the `weather_prediction.ipynb` notebook. The notebook is located in the `prediction` folder.
 
@@ -125,6 +150,15 @@ The installation script will install the following services and applications:
   - The script opens Chromium in full screen mode on boot. This can be disabled by commenting out the last line of the script.
 
 > Through the docker restart policy, the weather monitor will automatically restart if it crashes or the Raspberry Pi reboots.
+
+## autostart
+The autostart script is executed on boot. It opens the dashboard in the browser.
+
+The script was developed and forked from the following resources:
+- https://forums.raspberrypi.com/viewtopic.php?t=212015
+- https://gist.github.com/rampfox/085bf3ffb9ff51e114bf7afdf3ced71b
+
+It starts the browser within the LXDE desktop environment. The script opens Chromium in full screen mode on boot and disables error messages, infobars, and starts the browser in fullscreen mode.
 
 # Tech stack
 The weather monitor is built with the following technologies:
