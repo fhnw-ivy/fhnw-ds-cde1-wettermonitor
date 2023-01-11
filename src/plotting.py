@@ -11,6 +11,7 @@ import weather_repository as wr
 logger = logging.getLogger("app")
 
 plots_directory = "./static/plots/"
+plot_size = (1000, 650) # width, height
 
 
 def get_plots():
@@ -18,6 +19,78 @@ def get_plots():
     Returns a list of all plot names.
     """
     return ['wind_speed_1d', 'wind_speed_7d', 'air_temperature_1d', 'air_temperature_7d', 'wind_direction']
+
+
+def resample_and_interpolate_data(df, resample_rule="H", interpolation_method="linear"):
+    """
+    Resamples and interpolates the given data frame.
+    Args:
+        df: The data frame to resample and interpolate.
+        resample_rule: The rule to resample with.
+        interpolation_method: The interpolation method to use.
+
+    Returns: The resampled and interpolated data frame.
+    """
+    df = df.resample(resample_rule).mean()
+    df = df.interpolate(method=interpolation_method)
+    return df
+
+
+def add_mean_min_max_to_plot(plot, df, property_key, unit):
+    """
+    Adds a mean line and min/max points to the given plot.
+    Args:
+        plot: The plot to add the mean line and min/max points to.
+        df: The data frame containing the data.
+        property_key: The key of the property to add the mean line and min/max points for.
+        unit: The unit of the property.
+    """
+    plot.add_trace(go.Scatter(x=[df.index.min(), df.index.max()],
+                              y=[df[property_key].mean()] * 2, mode='lines',
+                              name=f"Mean: {df[property_key].mean():.2f}{unit}",
+                              line=dict(dash='dash')))
+
+    plot.add_trace(go.Scatter(x=[df[property_key].idxmin()],
+                              y=[df[property_key].min()],
+                              mode='markers',
+                              name=f"Min: {df[property_key].min():.2f}{unit}",
+                              marker=dict(size=10, color="red")))
+
+    plot.add_trace(go.Scatter(x=[df[property_key].idxmax()],
+                              y=[df[property_key].max()],
+                              mode='markers',
+                              name=f"Max: {df[property_key].max():.2f}{unit}",
+                              marker=dict(size=10, color="red")))
+
+
+def save_plot(plot, plot_name, station):
+    """
+    Saves the given plot to a file.
+    Args:
+        plot: The plot to save.
+        plot_name: The name of the plot.
+        station: The station the plot is for.
+    Returns: None
+    """
+
+    plot.update_layout(
+        autosize=False,
+        width=plot_size[0],
+        height=plot_size[1],
+    )
+
+    if not os.path.exists(plots_directory + station):
+        os.makedirs(plots_directory + station)
+
+    plot_file_name = f"{station}/{plot_name}"
+
+    try:
+        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".svg"))
+
+        logger.debug(f"Saved plot {plot_name} for station {station} as svg file.")
+    except Exception as e:
+        logger.error(f"Saving plot {plot_name} failed.")
+        logger.error(e)
 
 
 def generate_wind_speed_plot(station: str, days_delta):
@@ -65,48 +138,6 @@ def generate_wind_speed_plot(station: str, days_delta):
     )
 
     save_plot(plot, f"wind_speed_{days_delta}d", station)
-
-
-def resample_and_interpolate_data(df, resample_rule="H", interpolation_method="linear"):
-    """
-    Resamples and interpolates the given data frame.
-    Args:
-        df: The data frame to resample and interpolate.
-        resample_rule: The rule to resample with.
-        interpolation_method: The interpolation method to use.
-
-    Returns: The resampled and interpolated data frame.
-    """
-    df = df.resample(resample_rule).mean()
-    df = df.interpolate(method=interpolation_method)
-    return df
-
-
-def add_mean_min_max_to_plot(plot, df, property_key, unit):
-    """
-    Adds a mean line and min/max points to the given plot.
-    Args:
-        plot: The plot to add the mean line and min/max points to.
-        df: The data frame containing the data.
-        property_key: The key of the property to add the mean line and min/max points for.
-        unit: The unit of the property.
-    """
-    plot.add_trace(go.Scatter(x=[df.index.min(), df.index.max()],
-                              y=[df[property_key].mean()] * 2, mode='lines',
-                              name=f"Mean: {df[property_key].mean():.2f}{unit}",
-                              line=dict(dash='dash')))
-
-    plot.add_trace(go.Scatter(x=[df[property_key].idxmin()],
-                              y=[df[property_key].min()],
-                              mode='markers',
-                              name=f"Min: {df[property_key].min():.2f}{unit}",
-                              marker=dict(size=10, color="red")))
-
-    plot.add_trace(go.Scatter(x=[df[property_key].idxmax()],
-                              y=[df[property_key].max()],
-                              mode='markers',
-                              name=f"Max: {df[property_key].max():.2f}{unit}",
-                              marker=dict(size=10, color="red")))
 
 
 def generate_air_temperature_plot(station: str, days_delta):
@@ -185,36 +216,6 @@ def generate_wind_direction_plot(station: str):
     )
 
     save_plot(plot, "wind_direction", station)
-
-
-def save_plot(plot, plot_name, station):
-    """
-    Saves the given plot to a file.
-    Args:
-        plot: The plot to save.
-        plot_name: The name of the plot.
-        station: The station the plot is for.
-    Returns: None
-    """
-
-    plot.update_layout(
-        autosize=False,
-        width=1000,
-        height=700
-    )
-
-    if not os.path.exists(plots_directory + station):
-        os.makedirs(plots_directory + station)
-
-    plot_file_name = f"{station}/{plot_name}"
-
-    try:
-        plot.write_image(os.path.join(os.path.dirname(__file__), plots_directory, plot_file_name + ".svg"))
-
-        logger.debug(f"Saved plot {plot_name} for station {station} as svg file.")
-    except Exception as e:
-        logger.error(f"Saving plot {plot_name} failed.")
-        logger.error(e)
 
 
 def generate_all_plots():
