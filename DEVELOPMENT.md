@@ -174,6 +174,7 @@ The weather monitor is built with the following technologies:
 - [Pandas](https://pandas.pydata.org/) used to work with dataframes
 - [requests](https://docs.python-requests.org/en/master/) used to make HTTP requests to the API as well as to download CSV files
 - [InfluxDB](https://www.influxdata.com/) used as database. Official python client is used to communicate with the database
+    - Used version: 1.8 (limitation from weather_data.py script)
 - [Bash scripts](https://www.gnu.org/software/bash/) used to automate the download of files on build time and the installation of the weather monitor
 - [Intro.js](https://introjs.com/) used to provide a guided tour of the weather monitor
 - [Bulma](https://bulma.io/) used as CSS framework
