@@ -140,10 +140,9 @@
 
     <div id="navigation-bar" class="navigation-bar">
         <!-- add buttons for each station -->
-        {% for station in station_list %}
-            <button class="navigation-button title" id="{{ station }}"
-                    onclick="setStation('{{ station }}')">{{ station.title() }}</button>
-        {% endfor %}
+        {%for station in station_list%}
+            <button class="navigation-button title" id="{{station}}" onclick="setStation('{{station}}')">{{station.title()}}</button>
+        {%endfor%}
     </div>
 </div>
 
@@ -241,7 +240,7 @@
 
 <script>
     // add a click event listener to the title element
-    document.getElementById('station-title').addEventListener('click', function () {
+    document.getElementById('station-title').addEventListener('click', function() {
         // show the navigation bar
         document.getElementById('navigation-bar').classList.add('active');
     });
