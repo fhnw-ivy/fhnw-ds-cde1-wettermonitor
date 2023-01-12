@@ -147,7 +147,7 @@ The data for the weather monitor is provided by the following services of the Ci
 - https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen
 
 ## Collaborators
-This project (i.e. mini-challenge) was concluded during the first semester of the BSc Data Science course at the [University of Applied Sciences Northwestern Switzerland](https://www.fhnw.ch/en/). 
+This project was concluded during the first semester of the BSc Data Science course at the [University of Applied Sciences Northwestern Switzerland](https://www.fhnw.ch/en/). 
 
 Following students worked and collaborated on this project:
 - Dominik Filliger | [@DM1NIK](https://github.com/DM1NIK)
