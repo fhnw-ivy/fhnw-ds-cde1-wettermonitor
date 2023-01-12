@@ -62,8 +62,10 @@ The project is structured as follows:
 ├── download_model.sh # Script to download the prediction model from the web
 ├── example.env # Example environment file. InfluxDB password is stored here
 ├── images # Images used in README.md
+│   ├── banner.jpg
 │   ├── dashboard.png
-│   ├── dashboard_sketch.png
+│   ├── mockup_sketch_no_warnings.png 
+│   ├── mockup_sketch_warnings.png
 │   ├── dashboard_station_selection.png
 │   ├── detailed_plot.png
 │   ├── Intro.gif
@@ -421,12 +423,16 @@ The current state of the weather monitor is still a proof of concept. The follow
 
 ## Sketches of dashboard redesign
 The dashboard can be redesigned to support not only customizable but also a more modern look and feel. The following, not yet finished, sketches show how the dashboard could be redesigned:
-![Dashboard Sketch](images/dashboard_sketch.png)
+![Dashboard Sketch](images/mockup_sketch_no_warnings.png)
+And populated with a higher danger warning:
+![Dashboard Sketch](images/mockup_sketch_warnings.png)
 
 The dashboard sketch was designed with the same intuitive swiping gesture in mind as they are already implemented in the current version of the application.
 
 # Future Roadmap
 - [ ] Add more stations
+- [ ] Localization for German
+- [ ] Add warning messages ([Beaufort scale](https://www.wikiwand.com/en/Beaufort_scale#Modern_scale))
 - [ ] Add a summary view of all stations
 - [ ] Add customizable dashboard and plots
 - [ ] Artificial intelligence to predict the weather

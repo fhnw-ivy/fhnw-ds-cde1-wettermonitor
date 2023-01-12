@@ -1,4 +1,5 @@
 # fhnw-ds-cde1-wettermonitor
+![Dashboard](images/banner.jpg)
 Data engineering challenge weather monitor for water sports enthusiasts. The weather monitor aggregates weather data from weather stations and provides a dashboard to visualize the data in order to help water sports enthusiasts to decide when to go out on the water.
 
 ![Dashboard](images/dashboard.png)
@@ -22,6 +23,7 @@ Data engineering challenge weather monitor for water sports enthusiasts. The wea
   * [Known Issues](#known-issues)
     * [Screen flickering](#screen-flickering)
   * [Resources](#resources)
+  * [Collaborators](#collaborators)
 <!-- TOC -->
 
 ---
@@ -143,3 +145,12 @@ It is suspected that the screen flickering is caused by the power supply. If you
 The data for the weather monitor is provided by the following services of the City of Zurich:
 - https://tecdottir.herokuapp.com/docs/
 - https://data.stadt-zuerich.ch/dataset/sid_wapo_wetterstationen
+
+## Collaborators
+This project (i.e. mini-challenge) was concluded during the first semester of the BSc Data Science course at the [University of Applied Sciences Northwestern Switzerland](https://www.fhnw.ch/en/). 
+
+Following students worked and collaborated on this project:
+- Dominik Filliger | [@DM1NIK](https://github.com/DM1NIK)
+- Nils Fahrni | [@okaynils](https://github.com/okaynils)
+- Noah Leuenberger | [@noaahh](https://github.com/noaahh)
+- Oliver Pejic | [@Kroli99](https://github.com/Kroli99)
