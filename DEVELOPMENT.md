@@ -33,14 +33,16 @@
 * [Shutdown](#shutdown)
 * [Known Issues](#known-issues)
 * [Improvements](#improvements)
+  * [Sketches of dashboard redesign](#sketches-of-dashboard-redesign)
 * [Future Roadmap](#future-roadmap)
 <!-- TOC -->
+
 ---
 
 # Development Environment
 The weather monitor was tested and developed with the following environment:
 
-- Raspberry Pi 4 Model B
+- Raspberry Pi 4
 - Raspberry Pi OS (64-bit, with desktop)
    - Release date: September 22nd 2022
    - Kernel version: 5.15
@@ -61,10 +63,12 @@ The project is structured as follows:
 ├── example.env # Example environment file. InfluxDB password is stored here
 ├── images # Images used in README.md
 │   ├── dashboard.png
+│   ├── dashboard_sketch.png
 │   ├── dashboard_station_selection.png
 │   ├── detailed_plot.png
 │   ├── Intro.gif
 │   └── loading_screen.gif
+│   └── uml.png
 ├── install.sh # Convenience script to install the weather monitor
 ├── prediction # Prediction related files
 │   ├── input # Input data for the prediction model
@@ -163,7 +167,7 @@ It starts the browser within the LXDE desktop environment. The script opens Chro
 # Class Diagram / UML
 Because the project is not using classes that much, the UML provided shows the content of each Python file. These files are then represented as Class in the UML. The actual classes within the Python files are modeled as separate Class entities on the diagram.
 
-The weather_data.py file is only partially shown on the diagram. The functions shown on the diagram is the one that was added to the exising file that was given by the project owner.
+The `weather_data.py` file is only partially shown on the diagram. The function shown on the diagram is the one that was added to the existing file that was given by the project owner.
 
 The function parameters and attributes also include the data types if the data type is primitive. Dependencies between files and classes are also represented in the form of one way arrows.
 
@@ -409,6 +413,12 @@ The current state of the weather monitor is still a proof of concept. The follow
 - The weather monitor can be extended to support more weather stations.
 - Combination of the weather stations can be used to improve the prediction accuracy. Currently, no overall dashboard or prediction is available which summarizes the weather data from all weather stations. This may be a desired feature of clients.
 - Possibility of customizing the dashboard. Currently, the dashboard is not customizable. Customization of the dashboard may include the possibility to add or remove weather stations from the dashboard based on the client's location or adding custom plots based on measurements from the weather stations.
+
+## Sketches of dashboard redesign
+The dashboard can be redesigned to support not only customizable but also a more modern look and feel. The following, not yet finished, sketches show how the dashboard could be redesigned:
+![Dashboard Sketch](images/dashboard_sketch.png)
+
+The dashboard sketch was designed with the same intuitive swiping gesture in mind as they are already implemented in the current version of the application.
 
 # Future Roadmap
 - [ ] Add more stations

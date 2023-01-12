@@ -28,7 +28,7 @@ Data engineering challenge weather monitor for water sports enthusiasts. The wea
 ## Prerequisites
 Following software / hardware is required to set up or run the weather monitor:
 
-- Raspberry Pi 4 Model B
+- Raspberry Pi 4
 - Peripherals (Keyboard, Monitor)
 - Power supply
 - Micro SD-Card (32 GB)
@@ -98,11 +98,11 @@ Besides the wind data, the dashboards includes a slider with different plots for
 Documentation on how to change or reconnect the Wi-Fi on the Raspberry Pi can be found [here](https://www.raspberrypi.com/documentation/computers/configuration.html#configuring-networking).
 
 ### Can I use the weather monitor in fullscreen mode?
-Yes, the weather monitor can be used in fullscreen mode. To use the weather monitor in fullscreen mode, press `F11` on the keyboard. 
+Yes, the weather monitor is per default started in fullscreen mode. In case the browser in which the weather monitor is running is not in fullscreen mode, press `F11` on the keyboard. 
 
 Alternatively, you can use the Chromium browser menu to switch to fullscreen mode. Documentation on how to switch the Chromium browser to fullscreen mode can be found [here](https://techcult.com/how-to-go-full-screen-in-google-chrome/) (Same procedure for Chromium browser).
 
-To leave the fullscreen mode without a keyboard, long press in the top center of the screen. A close symbol will appear in the top center of the screen. Click on the close symbol to leave the fullscreen mode.
+To leave the fullscreen mode without a keyboard, long press in the top center of the screen. A close symbol will appear. Click on the close symbol to leave the fullscreen mode.
 
 ### How can I restart the weather monitor?
 To restart the weather monitor, simply use the following command:
