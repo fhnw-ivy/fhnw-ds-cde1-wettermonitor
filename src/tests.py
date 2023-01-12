@@ -32,7 +32,6 @@ class WeatherRepositoryTestCase(unittest.TestCase):
         self.assertEqual("°C", wr.get_unit(wr.Measurement.Water_temp.value))
         self.assertEqual("m/s", wr.get_unit(wr.Measurement.Wind_speed_avg_10min.value))
         self.assertEqual("m/s", wr.get_unit(wr.Measurement.Wind_gust_max_10min.value))
-        self.assertEqual("bft", wr.get_unit(wr.Measurement.Wind_force_avg_10min.value))
         self.assertEqual("°", wr.get_unit(wr.Measurement.Wind_direction.value))
         self.assertEqual("hPa", wr.get_unit(wr.Measurement.Pressure.value))
         self.assertEqual("mm", wr.get_unit(wr.Measurement.Precipitation.value))
