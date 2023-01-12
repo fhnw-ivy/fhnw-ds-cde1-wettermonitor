@@ -248,7 +248,7 @@
     // add a function to set the current station
     function setStation(station) {
         // update the station name in the title element
-        document.getElementById('station-title').textContent = station;
+        document.getElementById('station-title').textContent = station.charAt(0).toUpperCase() + station.slice(1);
 
         // hide the navigation bar
         document.getElementById('navigation-bar').classList.remove('active');

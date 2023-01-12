@@ -19,6 +19,7 @@
 * [Code Documentation](#code-documentation)
 * [Unit Testing](#unit-testing)
 * [CSV Import](#csv-import)
+  * [Update 2023-01-12](#update-2023-01-12)
 * [Accessing the application](#accessing-the-application)
 * [Configuration](#configuration)
 * [Updating the application](#updating-the-application)
