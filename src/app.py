@@ -34,7 +34,6 @@ index_template = "index.html"
 loading_template = "loading.html"
 default_refresh_interval = 60
 default_station = wr.get_stations()[0]
-default_plot_type = "wind_speed_with_predictions"
 show_current = ['air_temperature', 'water_temperature', 'barometric_pressure_qfe', 'humidity', 'windchill']
 
 
@@ -86,7 +85,7 @@ def index():
 
 
 @app.route("/weatherstation/<station>")
-def wetterstation(station):
+def weatherstation_station(station):
     # Dashboard data (Current weather)
     weather_data = pd.DataFrame()
     try:
@@ -127,7 +126,7 @@ def wetterstation(station):
                            refresh_interval=default_refresh_interval, current_list=current_data)
 
 @app.route("/weatherstation/<station>/plots/<plot_type>")
-def plot(station, plot_type):
+def weatherstation_station_plots(station, plot_type):
     return render_template(index_template, subpage="plot", station=station, plot_list=get_shuffled_plots(), station_list=wr.get_stations(), status=get_sanitized_service_status(),
                            refresh_interval=default_refresh_interval, plot_type=plot_type)
 

@@ -13,7 +13,7 @@ import weather_repository as wr
 predicted_measurements = [wr.Measurement.Wind_speed_avg_10min, wr.Measurement.Wind_direction, wr.Measurement.Air_temp]
 prediction_cache = {}
 
-def get_predictions(station: str, relative_datetime_labels=False):
+def get_predictions(station, relative_datetime_labels=False):
     """
     Returns a dictionary of predictions for the given station. Cache is used if data has not changed since and cache is allowed.
     Args:
@@ -46,7 +46,7 @@ def get_predictions(station: str, relative_datetime_labels=False):
         return labelled_predictions
 
 
-def __get_cached_predictions(station: str, latest_data_datetime: datetime.datetime):
+def __get_cached_predictions(station, latest_data_datetime):
     """
     Returns the cached predictions for the given station if they are available and the data has not changed since.
     Args:
@@ -62,8 +62,8 @@ def __get_cached_predictions(station: str, latest_data_datetime: datetime.dateti
     return None
 
 
-def __predict(station: str, air_temperature_10min_before: float, wind_speed_avg_10min_before: float,
-              wind_direction_10min_before: float, day: int, month: int, year: int, data_datetime: datetime.datetime):
+def __predict(station, air_temperature_10min_before, wind_speed_avg_10min_before,
+              wind_direction_10min_before, day, month, year, data_datetime):
     """
     Predicts the wind speed, wind direction and air temperature for the next 60 minutes. The predictions are based on the given data.
     Args:
@@ -106,7 +106,7 @@ def __predict(station: str, air_temperature_10min_before: float, wind_speed_avg_
         return labelled_predictions
 
 
-def __convert_station_to_int(station: str):
+def __convert_station_to_int(station):
     return 0 if station == 'mythenquai' else 1
 
 

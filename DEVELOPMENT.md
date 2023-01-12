@@ -9,6 +9,7 @@
   * [prediction.py](#predictionpy)
   * [install.sh](#installsh)
   * [autostart](#autostart)
+* [Class Diagram / UML](#class-diagram--uml)
 * [Tech stack](#tech-stack)
 * [Environment](#environment)
   * [Run in development mode (Docker)](#run-in-development-mode--docker-)
@@ -34,7 +35,6 @@
 * [Improvements](#improvements)
 * [Future Roadmap](#future-roadmap)
 <!-- TOC -->
-
 ---
 
 # Development Environment
@@ -159,6 +159,15 @@ The script was developed and forked from the following resources:
 - https://gist.github.com/rampfox/085bf3ffb9ff51e114bf7afdf3ced71b
 
 It starts the browser within the LXDE desktop environment. The script opens Chromium in full screen mode on boot and disables error messages, infobars, and starts the browser in fullscreen mode.
+
+# Class Diagram / UML
+Because the project is not using classes that much, the UML provided shows the content of each Python file. These files are then represented as Class in the UML. The actual classes within the Python files are modeled as separate Class entities on the diagram.
+
+The weather_data.py file is only partially shown on the diagram. The functions shown on the diagram is the one that was added to the exising file that was given by the project owner.
+
+The function parameters and attributes also include the data types if the data type is primitive. Dependencies between files and classes are also represented in the form of one way arrows.
+
+![UML](images/uml.png)
 
 # Tech stack
 The weather monitor is built with the following technologies:

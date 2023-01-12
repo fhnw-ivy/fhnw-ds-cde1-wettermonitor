@@ -112,10 +112,12 @@ def generate_wind_speed_plot(station: str, days_delta):
                                     stop_time=stop_time)
     weather_data = wr.run_query(weather_query)
 
-    predictions = pr.get_predictions(station, relative_datetime_labels=True)
+    predictions = None
 
     if days_delta > 1:
         weather_data = resample_and_interpolate_data(weather_data)
+    else:
+        predictions = pr.get_predictions(station, relative_datetime_labels=True)
 
     plot = go.Figure()
 
@@ -125,8 +127,14 @@ def generate_wind_speed_plot(station: str, days_delta):
     plot.add_trace(
         go.Scatter(x=weather_data.index, y=weather_data["wind_gust_max_10min"], mode='lines',
                    name='Wind gust (10min max)'))
-    plot.add_trace(go.Scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines',
-                              name='Wind speed prediction'))
+
+    if predictions is not None:
+        plot.add_trace(go.Scatter(x=list(predictions.keys()), y=list(x[0] for x in predictions.values()), mode='lines',
+                                  name='Wind speed prediction'))
+
+        plot.update_xaxes(range=[weather_data.index.min(), list(predictions.keys())[-1]])
+    else:
+        plot.update_xaxes(range=[weather_data.index.min(), weather_data.index.max()])
 
     add_mean_min_max_to_plot(plot, weather_data, "wind_speed_avg_10min",
                              wr.unit_mapping[wr.Measurement.Wind_speed_avg_10min.value])
@@ -168,8 +176,7 @@ def generate_air_temperature_plot(station: str, days_delta):
 
     add_mean_min_max_to_plot(plot, weather_data, "air_temperature", wr.unit_mapping[wr.Measurement.Air_temp.value])
 
-    plot.update_yaxes(
-        range=[min(-5, weather_data["air_temperature"].min() - 3), max(5, weather_data["air_temperature"].max() + 3)])
+    plot.update_xaxes(range=[weather_data.index.min(), weather_data.index.max()])
 
     plot.update_layout(
         title=f"Air temperature of the last " + ("24 hours" if days_delta == 1 else f"{days_delta} days"),
@@ -208,6 +215,9 @@ def generate_wind_direction_plot(station: str):
                               name='Prediction'))
 
     add_mean_min_max_to_plot(plot, weather_data, "wind_direction", wr.unit_mapping[wr.Measurement.Wind_direction.value])
+
+    plot.update_yaxes(range=[0, 360])
+    plot.update_xaxes(range=[weather_data.index.min(), list(predictions.keys())[-1]])
 
     plot.update_layout(
         title=f"Wind direction of the last 24 hours",

@@ -3,7 +3,6 @@ import enum
 import logging
 import os
 import time
-from builtins import str
 
 import requests
 
@@ -53,7 +52,7 @@ unit_mapping = {
     "global_radiation": "W/m²"
 }
 
-def get_unit(variable_name) -> str:
+def get_unit(variable_name):
     """
     Returns the unit for the given variable name.
     Args:
@@ -92,7 +91,7 @@ class WeatherQuery:
         return query
 
     @staticmethod
-    def create_date_string(date) -> str:
+    def create_date_string(date):
         """
         Creates a date string for the weather_query and given date.
         Args:
@@ -155,7 +154,7 @@ def download_latest_csv_files(station):
         logger.warning(f"Status code: {r.status_code}")
         logger.warning(f"Using fallback CSV file for station {station}..")
 
-def init() -> None:
+def init():
     """
     Initializes the database connection and creates the database if it does not exist.
     Imports the CSV files into the database.
@@ -196,7 +195,7 @@ def init() -> None:
     logger.debug("Periodic read finished.")
 
 
-def import_latest_data_periodic() -> None:
+def import_latest_data_periodic():
     """
     Wrapper function for the periodic read of the latest data from the API of the weather_data.py script.
     Updates the service status accordingly.

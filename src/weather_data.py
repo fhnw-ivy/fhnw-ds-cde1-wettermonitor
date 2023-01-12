@@ -25,13 +25,11 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import numpy as np
-import pandas
 import pandas as pd
 import requests
 from influxdb import DataFrameClient
 from pandas import json_normalize
 from requests.exceptions import ConnectionError
-
 
 logger = logging.getLogger("app")
 
