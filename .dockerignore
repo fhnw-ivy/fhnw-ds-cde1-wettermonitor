@@ -23,5 +23,9 @@ coverage.xml
 
 .venv/
 venv/
+dist/
+build/
 *.egg-info
+.coverage
 .github/
+coverage.xml
