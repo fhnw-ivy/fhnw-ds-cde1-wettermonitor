@@ -264,7 +264,7 @@ Some specific parts of the code are also documented in this file you are current
 The unit tests are made with the coverage package. The tests are located in the `src` folder. The tests are executed with the following command:
 ```bash
 cd src
-python python -m tests -v
+python -m tests -v
 ```
 
 The tests are not covering all the code. The tests are only covering the code that is related to the query generation and some visualization code.
@@ -280,6 +280,11 @@ The CSV are provided for the import in the following order with the first entry 
 3. The CSV files are downloaded on run time within the initialization of the application. The function replaces the CSV from the layer above if the download is successful.
 
 This layered system ensures, that the loading time of the application is reasonably low (best case scenario) or historical data is available at all to import (worst case scenario).
+
+## Update 2023-01-12
+Before turning in the first version of the product it turned out that the provided CSV files no longer exist. The application therefore currently running on the fallback solution described above till the CSVs are available again.
+
+The situation may be temporary and the fallback solution works fine. However, if the CSV files are not available for a longer period of time, a fix should be evaluated.
 
 # Accessing the application
 The dashboard can be locally accessed through the following URL: http://localhost:6540
