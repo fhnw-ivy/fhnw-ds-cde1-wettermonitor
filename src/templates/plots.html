@@ -2,7 +2,8 @@
     {% for plot_type in plot_list %}
         <div class="option plot">
             <a href="{{ station }}/plots/{{ plot_type }}">
-                <object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%" style="pointer-events: none;"></object>
+                <object data={{ url_for('static', filename='plots/{station}/{plot_type}.svg'.format(station=station, plot_type=plot_type)) }} width="100%"
+                        style="pointer-events: none;"></object>
             </a>
         </div>
     {% endfor %}
